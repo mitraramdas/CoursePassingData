@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roosevelt District — Superintendent Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2856;--navy-dark:#111c3d;--navy-mid:#243070;
+  --accent:#3d5af1;--accent-light:#e8ecff;
+  --gold:#e8a020;--success:#15803d;--success-bg:#dcfce7;
+  --danger:#dc2626;--danger-bg:#fee2e2;
+  --surface:#fff;--surface-2:#f7f8fc;--border:#e4e7f0;
+  --text:#1a1f36;--text-2:#4b5280;--text-3:#8890b0;
+  --swd:#7c3aed;--ell:#0369a1;
+  --sidebar-w:230px;--radius:10px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(26,40,86,.08),0 4px 16px rgba(26,40,86,.06);
+}
+html,body{height:100%;font-family:"DM Sans",sans-serif;font-size:15px;color:var(--text);background:var(--surface-2)}
+#main-screen{display:flex;height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-dark);color:#fff;display:flex;flex-direction:column;padding:1.25rem 0;overflow-y:auto}
+.sidebar-top{flex:1}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:0 1.25rem 1.5rem}
+.logo-mark{width:36px;height:36px;border-radius:9px;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-family:"DM Serif Display",serif;font-size:18px;font-weight:700;flex-shrink:0}
+.logo-text{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.logo-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.nav-section{padding:0 .75rem;margin-bottom:.5rem}
+.nav-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:8px 12px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.65);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none;margin-bottom:1px}
+.nav-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff;font-weight:500}
+.sidebar-bottom{padding:1rem .75rem 0;border-top:1px solid rgba(255,255,255,.08)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px 6px;margin-bottom:8px}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.user-info div:first-child{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role-label{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.content{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+.tab{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;gap:1rem;flex-wrap:wrap}
+.page-header h1{font-size:24px;font-weight:600}
+.page-sub{font-size:14px;color:var(--text-3);margin-top:3px}
+.header-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.select-pill{padding:7px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;background:#fff;color:var(--text);cursor:pointer;width:auto}
+.btn-primary{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-secondary{padding:7px 16px;background:var(--accent-light);color:var(--accent);border:none;border-radius:var(--radius);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-secondary:hover{background:#d4dafe}
+.btn-ghost{padding:8px 16px;background:transparent;color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-ghost.full{width:100%;margin-top:.5rem;text-align:center}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow)}
+.kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:8px}
+.kpi-value{font-size:28px;font-weight:700;color:var(--navy);line-height:1}
+.kpi-sub{font-size:12px;color:var(--text-3);margin-top:5px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.card h3{font-size:16px;font-weight:600;margin-bottom:1rem}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.chart-card{padding:1.25rem}
+@media(max-width:1000px){.charts-grid{grid-template-columns:1fr}}
+.schools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;margin-bottom:1.5rem}
+.school-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow);transition:all .18s;position:relative;overflow:hidden}
+.school-card:hover{box-shadow:0 6px 28px rgba(26,40,86,.14);transform:translateY(-2px)}
+.school-card-bar{position:absolute;top:0;left:0;height:4px;width:100%}
+.school-card h3{font-size:16px;font-weight:700;margin-bottom:4px;margin-top:8px}
+.school-card-meta{font-size:12px;color:var(--text-3);margin-bottom:.75rem}
+.school-stat-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.school-stat{font-size:12px;color:var(--text-2);background:var(--surface-2);padding:4px 10px;border-radius:20px}
+.school-stat strong{color:var(--text)}
+.drill-btn{margin-top:1rem;width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--navy);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.drill-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface-2)}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:9px 12px;vertical-align:middle}
+tbody tr:hover{background:var(--surface-2)}
+.badge-pass{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-good{background:#dcfce7;color:#15803d}
+.badge-mid{background:#fef9c3;color:#854d0e}
+.badge-low{background:#fee2e2;color:#dc2626}
+.back-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;width:fit-content;font-size:13px;font-weight:500}
+.back-bar:hover{background:var(--surface-2)}
+.back-bar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-3)}
+.empty-state h3{font-size:17px;font-weight:500;margin-bottom:6px;color:var(--text-2)}
+</style>
+</head>
+<body>
+<div id="main-screen">
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <div class="logo-mark">R</div>
+        <div><div class="logo-text">Roosevelt District</div><div class="logo-sub">Superintendent Portal</div></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">District Overview</div>
+        <a class="nav-item active" id="nav-overview" onclick="showTab('overview')">
+          <svg viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+          District Overview
+        </a>
+        <a class="nav-item" id="nav-schools" onclick="showTab('schools')">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Schools
+        </a>
+        <a class="nav-item" id="nav-compare" onclick="showTab('compare')">
+          <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          Compare Schools
+        </a>
+        <a class="nav-item" id="nav-reports" onclick="showTab('reports')">
+          <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+          District Reports
+        </a>
+        <a class="nav-item" id="nav-settings" onclick="showTab('settings')">
+          <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Settings
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">S</div>
+        <div class="user-info">
+          <div id="user-name-display">Superintendent</div>
+          <div class="user-role-label">Superintendent</div>
+        </div>
+      </div>
+      <button class="btn-ghost full" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <!-- DISTRICT OVERVIEW -->
+    <div id="tab-overview" class="tab">
+      <div class="page-header">
+        <div><h1>District Overview</h1><p class="page-sub">Passing data across all schools in the district</p></div>
+        <div class="header-controls">
+          <select id="ov-year" class="select-pill" onchange="loadOverview()"><option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option></select>
+          <select id="ov-quarter" class="select-pill" onchange="loadOverview()"><option value="">All Quarters</option><option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option></select>
+          <select id="ov-subject" class="select-pill" onchange="loadOverview()"><option value="">All Subjects</option><option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option></select>
+          <button class="btn-secondary" onclick="exportOverviewPDF()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export PDF</button>
+        </div>
+      </div>
+      <div class="kpi-grid" id="ov-kpi-grid"><div class="kpi-card"><div class="kpi-label">Loading</div><div class="kpi-value" style="font-size:20px">&#9203;</div></div></div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>Pass Rate by School</h3><div style="position:relative;height:240px"><canvas id="ov-school-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>District Grade Distribution</h3><div style="position:relative;height:240px"><canvas id="ov-dist-chart"></canvas></div></div>
+      </div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>SWD Fail Rate by School</h3><div style="position:relative;height:220px"><canvas id="ov-swd-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>ELL Fail Rate by School</h3><div style="position:relative;height:220px"><canvas id="ov-ell-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <h3>School Summary Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>School</th><th>Submissions</th><th>Teachers</th><th>Total Students</th><th>Passing</th><th>Failing</th><th>Pass Rate</th><th style="color:#7c3aed">SWD Total</th><th style="color:#7c3aed">SWD Failing</th><th style="color:#0369a1">ELL Total</th><th style="color:#0369a1">ELL Failing</th></tr></thead>
+            <tbody id="ov-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHOOLS -->
+    <div id="tab-schools" class="tab" style="display:none">
+      <div id="schools-list-view">
+        <div class="page-header">
+          <div><h1>Schools</h1><p class="page-sub">Click any school to drill into its full dashboard</p></div>
+          <div class="header-controls">
+            <select id="sc-year" class="select-pill" onchange="loadSchools()"><option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option></select>
+            <select id="sc-quarter" class="select-pill" onchange="loadSchools()"><option value="">All Quarters</option><option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option></select>
+          </div>
+        </div>
+        <div class="schools-grid" id="schools-grid"></div>
+      </div>
+      <div id="school-drill-view" style="display:none">
+        <div class="back-bar" onclick="closeDrill()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to all schools</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:.25rem" id="drill-school-name"></div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:1.5rem" id="drill-school-sub"></div>
+        <div class="kpi-grid" id="drill-kpi-grid"></div>
+        <div class="charts-grid">
+          <div class="card chart-card"><h3>Pass Rate by Teacher</h3><div style="position:relative;height:220px"><canvas id="drill-teacher-chart"></canvas></div></div>
+          <div class="card chart-card"><h3>Grade Distribution</h3><div style="position:relative;height:220px"><canvas id="drill-dist-chart"></canvas></div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="card chart-card"><h3>Pass Rate by Subject</h3><div style="position:relative;height:220px"><canvas id="drill-subject-chart"></canvas></div></div>
+          <div class="card chart-card"><h3>Trend by Quarter</h3><div style="position:relative;height:220px"><canvas id="drill-trend-chart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <h3>Teacher Summary</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>Teacher</th><th>Submissions</th><th>Total Students</th><th>Passing</th><th>Pass Rate</th><th style="color:#7c3aed">SWD Failing</th><th style="color:#0369a1">ELL Failing</th></tr></thead><tbody id="drill-teacher-body"></tbody></table>
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;justify-content:flex-end">
+          <button class="btn-secondary" onclick="exportDrillPDF()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export School PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE -->
+    <div id="tab-compare" class="tab" style="display:none">
+      <div class="page-header">
+        <div><h1>Compare Schools</h1><p class="page-sub">Side-by-side pass rate and equity comparison</p></div>
+        <div class="header-controls">
+          <select id="cmp-year" class="select-pill" onchange="loadCompare()"><option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option></select>
+          <select id="cmp-quarter" class="select-pill" onchange="loadCompare()"><option value="">All Quarters</option><option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option></select>
+          <select id="cmp-subject" class="select-pill" onchange="loadCompare()"><option value="">All Subjects</option><option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option></select>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>Overall Pass Rate — All Schools</h3><div style="position:relative;height:280px"><canvas id="cmp-pass-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>SWD vs ELL Fail Rate by School</h3><div style="position:relative;height:280px"><canvas id="cmp-equity-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <h3>Side-by-Side Comparison</h3>
+        <div class="table-wrap">
+          <table><thead><tr><th>School</th><th>Students</th><th>Pass Rate</th><th style="color:#15803d">Gen Ed Fail%</th><th style="color:#7c3aed">SWD Fail%</th><th style="color:#0369a1">ELL Fail%</th><th>Rank</th></tr></thead><tbody id="cmp-table-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="tab-reports" class="tab" style="display:none">
+      <div class="page-header">
+        <div><h1>District Reports</h1><p class="page-sub">Aggregated district-wide reporting for compliance and review</p></div>
+        <div class="header-controls">
+          <select id="rpt-year" class="select-pill" onchange="loadDistrictReports()"><option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option></select>
+          <select id="rpt-quarter" class="select-pill" onchange="loadDistrictReports()"><option value="">All Quarters</option><option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option></select>
+          <button class="btn-secondary" onclick="exportDistrictReportPDF()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export District PDF</button>
+        </div>
+      </div>
+      <div class="kpi-grid" id="rpt-kpi-grid"><div class="kpi-card"><div class="kpi-label">Select filters above</div><div class="kpi-value" style="font-size:16px;color:var(--text-3)">&#8212;</div></div></div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>District Trend by Quarter</h3><div style="position:relative;height:220px"><canvas id="rpt-trend-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Pass Rate by Subject</h3><div style="position:relative;height:220px"><canvas id="rpt-subject-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <h3>Subject Breakdown by School</h3>
+        <div class="table-wrap">
+          <table><thead><tr><th>School</th><th>Subject</th><th>Teachers</th><th>Students</th><th>Passing</th><th>Failing</th><th>Pass Rate</th><th style="color:#7c3aed">SWD Fail</th><th style="color:#0369a1">ELL Fail</th></tr></thead><tbody id="rpt-table-body"><tr><td colspan="9" style="text-align:center;color:var(--text-3);padding:2rem">Use the filters above to load report data</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="tab" style="display:none">
+      <div class="page-header"><div><h1>Settings</h1><p class="page-sub">Manage schools and access passcodes for the district</p></div></div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <h3 style="margin-bottom:.4rem">Role Passcodes</h3>
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:1.25rem">These passcodes are required when creating Administration or Superintendent accounts.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+          <div>
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:8px">Admin Passcode</label>
+            <div style="display:flex;gap:8px">
+              <input type="password" id="admin-passcode-input" placeholder="Set admin passcode" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;background:#fff">
+              <button onclick="savePasscode('admin')" class="btn-primary" style="width:auto;padding:9px 18px;margin:0">Save</button>
+            </div>
+            <div id="admin-passcode-msg" style="font-size:12px;margin-top:6px;color:var(--text-3)"></div>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:8px">Superintendent Passcode</label>
+            <div style="display:flex;gap:8px">
+              <input type="password" id="super-passcode-input" placeholder="Set superintendent passcode" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;background:#fff">
+              <button onclick="savePasscode('superintendent')" class="btn-primary" style="width:auto;padding:9px 18px;margin:0">Save</button>
+            </div>
+            <div id="super-passcode-msg" style="font-size:12px;margin-top:6px;color:var(--text-3)"></div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;padding:10px 14px;background:#fef9c3;border-radius:8px;font-size:12px;color:#854d0e">&#9888;&#65039; Keep these passcodes secure. Anyone with the passcode can create an account with that role.</div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:.4rem">School List</h3>
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:1.25rem">These schools appear in the registration dropdown.</p>
+        <div style="display:flex;gap:8px;margin-bottom:1rem">
+          <input type="text" id="new-school-input" placeholder="Add a new school name..." style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;background:#fff">
+          <button onclick="addSchool()" class="btn-primary" style="width:auto;padding:9px 20px;margin:0">+ Add School</button>
+        </div>
+        <div id="schools-manager-list"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyAVls41ZyZLH9qk5pScvjOGJOuD9CYoaHU",authDomain:"coursepassing.firebaseapp.com",databaseURL:"https://coursepassing-default-rtdb.firebaseio.com",projectId:"coursepassing",storageBucket:"coursepassing.firebasestorage.app",messagingSenderId:"556505993758",appId:"1:556505993758:web:1a2fd4c5fc48bb56f9540f"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.database();
+
+let currentUser=null,currentUserData=null,allReports=[];
+let ovSchoolChart=null,ovDistChart=null,ovSwdChart=null,ovEllChart=null;
+let drillTeacherChart=null,drillDistChart=null,drillSubjectChart=null,drillTrendChart=null;
+let cmpPassChart=null,cmpEquityChart=null;
+let rptTrendChart=null,rptSubjectChart=null;
+let drillData=[],drillSchoolName="";
+const SCHOOL_COLORS=["#3d5af1","#e8a020","#15803d","#dc2626","#7c3aed","#0369a1","#d97706","#db2777"];
+const DEFAULT_SCHOOLS=["Roosevelt Middle School","Roosevelt High School","Roosevelt Elementary School","District Office"];
+const SUBJECTS=["Math","ELA","STEAM","Science","History","Art","US History","Foreign Language","Home & Careers","Business"];
+const QMAP={"Quarter 1 - Progress Report":"Q1","Quarter 2 - Progress Report":"Q2","Quarter 3 - Progress Report":"Q3","Quarter 4 - Final":"Q4"};
+
+// ── AUTH ──────────────────────────────────────────────────────
+auth.onAuthStateChanged(async function(user){
+  if(user){
+    currentUser=user;
+    const snap=await db.ref("users/"+user.uid).get();
+    if(snap.exists()){
+      currentUserData=snap.val();
+    } else {
+      const stored=localStorage.getItem("rms_user");
+      currentUserData=stored?JSON.parse(stored):{name:user.email.split("@")[0],email:user.email,role:"superintendent"};
+      await db.ref("users/"+user.uid).set(currentUserData);
+    }
+    if(currentUserData.role!=="superintendent"){
+      window.location.href=currentUserData.role==="admin"?"admin.html":"teacher.html";
+      return;
+    }
+    var name=currentUserData.name||user.email;
+    document.getElementById("user-name-display").textContent=name;
+    document.getElementById("user-avatar").textContent=name[0].toUpperCase();
+    loadOverview();
+  } else {
+    window.location.href="index.html";
+  }
+});
+
+function logout(){ auth.signOut(); }
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function showTab(tab){
+  ["overview","schools","compare","reports","settings"].forEach(function(t){
+    var el=document.getElementById("tab-"+t);
+    var nav=document.getElementById("nav-"+t);
+    if(el) el.style.display="none";
+    if(nav) nav.classList.remove("active");
+  });
+  var tabEl=document.getElementById("tab-"+tab);
+  var navEl=document.getElementById("nav-"+tab);
+  if(tabEl) tabEl.style.display="block";
+  if(navEl) navEl.classList.add("active");
+  if(tab==="overview") loadOverview();
+  else if(tab==="schools") loadSchools();
+  else if(tab==="compare") loadCompare();
+  else if(tab==="reports") loadDistrictReports();
+  else if(tab==="settings") loadSettings();
+}
+
+// ── FETCH ─────────────────────────────────────────────────────
+async function fetchReports(year,quarter,subject){
+  var snap=await db.ref("allReports").get();
+  var results=[];
+  snap.forEach(function(ch){
+    var d=ch.val();
+    var mY=!year||d.year===year;
+    var mQ=!quarter||d.quarter===quarter;
+    var mS=!subject||d.subject===subject;
+    if(mY&&mQ&&mS) results.push(Object.assign({id:ch.key},d));
+  });
+  return results;
+}
+
+function groupBySchool(reports){
+  var bySchool={};
+  reports.forEach(function(r){
+    var sid=r.schoolId||"unassigned";
+    var sname=r.schoolName||"Unassigned School";
+    if(!bySchool[sid]) bySchool[sid]={id:sid,name:sname,reports:[],teachers:new Set(),total:0,passing:0,failing:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0,genFail:0};
+    var s=bySchool[sid];
+    s.reports.push(r);
+    s.teachers.add(r.teacherId||r.teacherEmail);
+    s.total+=(r.summary&&r.summary.total)||0;
+    s.passing+=(r.summary&&r.summary.passing)||0;
+    s.failing+=(r.summary&&r.summary.failing)||0;
+    s.swdTotal+=(r.summary&&r.summary.swdTotal)||0;
+    s.swdFail+=(r.summary&&r.summary.swdFail)||0;
+    s.ellTotal+=(r.summary&&r.summary.ellTotal)||0;
+    s.ellFail+=(r.summary&&r.summary.ellFail)||0;
+    s.genFail+=(r.summary&&r.summary.genFail)||0;
+  });
+  var arr=Object.values(bySchool);
+  arr.forEach(function(s){
+    s.teacherCount=s.teachers.size;
+    s.passRate=s.total>0?Math.round(s.passing/s.total*100):0;
+    s.swdFailRate=s.swdTotal>0?Math.round(s.swdFail/s.swdTotal*100):0;
+    s.ellFailRate=s.ellTotal>0?Math.round(s.ellFail/s.ellTotal*100):0;
+  });
+  arr.sort(function(a,b){return b.total-a.total;});
+  return arr;
+}
+
+function bc(rate){ return rate>=75?"badge-good":rate>=60?"badge-mid":"badge-low"; }
+
+// ── DISTRICT OVERVIEW ─────────────────────────────────────────
+async function loadOverview(){
+  var year=val("ov-year"),quarter=val("ov-quarter"),subject=val("ov-subject");
+  document.getElementById("ov-kpi-grid").innerHTML="<div class='kpi-card'><div class='kpi-label'>Loading</div><div class='kpi-value' style='font-size:20px'>&#9203;</div></div>";
+  try{
+    var reports=await fetchReports(year,quarter,subject);
+    allReports=reports;
+    var schools=groupBySchool(reports);
+    var T={total:0,passing:0,failing:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0};
+    schools.forEach(function(s){T.total+=s.total;T.passing+=s.passing;T.failing+=s.failing;T.swdTotal+=s.swdTotal;T.swdFail+=s.swdFail;T.ellTotal+=s.ellTotal;T.ellFail+=s.ellFail;});
+    var dr=T.total>0?Math.round(T.passing/T.total*100):0;
+    var swdR=T.swdTotal>0?Math.round(T.swdFail/T.swdTotal*100):0;
+    var ellR=T.ellTotal>0?Math.round(T.ellFail/T.ellTotal*100):0;
+    var allTeachers=new Set(reports.map(function(r){return r.teacherId||r.teacherEmail;})).size;
+    document.getElementById("ov-kpi-grid").innerHTML=
+      kpi("Schools Reporting",schools.length,allTeachers+" teachers")+
+      kpi("District Students",T.total.toLocaleString(),reports.length+" submissions")+
+      kpi("District Pass Rate",dr+"%",T.passing.toLocaleString()+" passing","color:"+(dr>=75?"#15803d":dr>=60?"#854d0e":"#dc2626"))+
+      kpi("District Failing",T.failing.toLocaleString(),"need intervention","color:#dc2626")+
+      kpi("SWD Failing",T.swdFail.toLocaleString(),"of "+T.swdTotal.toLocaleString()+" · "+swdR+"% rate","color:#7c3aed","border-left:3px solid #7c3aed","color:#7c3aed")+
+      kpi("ELL Failing",T.ellFail.toLocaleString(),"of "+T.ellTotal.toLocaleString()+" · "+ellR+"% rate","color:#0369a1","border-left:3px solid #0369a1","color:#0369a1");
+    document.getElementById("ov-table-body").innerHTML=schools.map(function(s){
+      return "<tr><td style='font-weight:600'>"+s.name+"</td><td>"+s.reports.length+"</td><td>"+s.teacherCount+"</td><td>"+s.total.toLocaleString()+"</td><td style='color:#15803d'>"+s.passing.toLocaleString()+"</td><td style='color:#dc2626'>"+s.failing.toLocaleString()+"</td><td><span class='badge-pass "+bc(s.passRate)+"'>"+s.passRate+"%</span></td><td style='color:#7c3aed'>"+s.swdTotal+"</td><td style='color:#7c3aed;font-weight:700'>"+s.swdFail+"</td><td style='color:#0369a1'>"+s.ellTotal+"</td><td style='color:#0369a1;font-weight:700'>"+s.ellFail+"</td></tr>";
+    }).join("");
+    setTimeout(function(){renderOvCharts(schools,reports);},50);
+  }catch(e){document.getElementById("ov-kpi-grid").innerHTML="<div class='kpi-card'><div class='kpi-label' style='color:#dc2626'>Error</div><div class='kpi-sub'>"+e.message+"</div></div>";}
+}
+
+function kpi(label,value,sub,valueStyle,cardStyle,labelStyle){
+  return "<div class='kpi-card' style='"+(cardStyle||"")+"'><div class='kpi-label' style='"+(labelStyle||"")+"'>"+label+"</div><div class='kpi-value' style='"+(valueStyle||"")+"'>"+value+"</div>"+(sub?"<div class='kpi-sub'>"+sub+"</div>":"")+"</div>";
+}
+
+function renderOvCharts(schools,reports){
+  var labels=schools.map(function(s){return s.name;});
+  var rates=schools.map(function(s){return s.passRate;});
+  destroyChart("ovSchoolChart");
+  var c1=document.getElementById("ov-school-chart");
+  if(c1) window.ovSchoolChart=new Chart(c1,{type:"bar",data:{labels:labels,datasets:[{data:rates,backgroundColor:rates.map(function(r){return r>=75?"#22c55e80":r>=60?"#eab30880":"#dc262680";}),borderColor:rates.map(function(r){return r>=75?"#22c55e":r>=60?"#eab308":"#dc2626";}),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+  var t={r1:0,r2:0,r3:0,r4:0,r5:0,r6:0};
+  reports.forEach(function(r){if(r.summary){["r1","r2","r3","r4","r5","r6"].forEach(function(k){t[k]+=(r.summary[k]||0);});}});
+  destroyChart("ovDistChart");
+  var c2=document.getElementById("ov-dist-chart");
+  if(c2) window.ovDistChart=new Chart(c2,{type:"doughnut",data:{labels:["0-55","56-64","65-79","80-89","90-94","95-100"],datasets:[{data:[t.r1,t.r2,t.r3,t.r4,t.r5,t.r6],backgroundColor:["#dc2626","#f97316","#eab308","#22c55e","#10b981","#059669"],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right"}}}});
+  destroyChart("ovSwdChart");
+  var c3=document.getElementById("ov-swd-chart");
+  if(c3) window.ovSwdChart=new Chart(c3,{type:"bar",data:{labels:labels,datasets:[{data:schools.map(function(s){return s.swdFailRate;}),backgroundColor:"#7c3aed80",borderColor:"#7c3aed",borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+  destroyChart("ovEllChart");
+  var c4=document.getElementById("ov-ell-chart");
+  if(c4) window.ovEllChart=new Chart(c4,{type:"bar",data:{labels:labels,datasets:[{data:schools.map(function(s){return s.ellFailRate;}),backgroundColor:"#0369a180",borderColor:"#0369a1",borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+}
+
+// ── SCHOOLS ───────────────────────────────────────────────────
+async function loadSchools(){
+  var year=val("sc-year"),quarter=val("sc-quarter");
+  var grid=document.getElementById("schools-grid");
+  grid.innerHTML="<div class='empty-state'><div style='font-size:40px'>&#9203;</div><h3>Loading...</h3></div>";
+  try{
+    var reports=await fetchReports(year,quarter,"");
+    var schools=groupBySchool(reports);
+    if(!schools.length){grid.innerHTML="<div class='empty-state'><div style='font-size:40px'>&#127979;</div><h3>No schools found</h3><p>No data submitted for these filters.</p></div>";return;}
+    grid.innerHTML="";
+    schools.forEach(function(s,i){
+      var col=SCHOOL_COLORS[i%SCHOOL_COLORS.length];
+      var div=document.createElement("div");
+      div.className="school-card";
+      div.innerHTML=
+        "<div class='school-card-bar' style='background:"+col+"'></div>"+
+        "<h3>"+s.name+"</h3>"+
+        "<div class='school-card-meta'>"+s.teacherCount+" teachers &middot; "+s.reports.length+" submissions</div>"+
+        "<span class='badge-pass "+bc(s.passRate)+"'>"+s.passRate+"% passing</span>"+
+        "<div class='school-stat-row'>"+
+          "<div class='school-stat'><strong>"+s.total.toLocaleString()+"</strong> students</div>"+
+          "<div class='school-stat'><strong>"+s.failing.toLocaleString()+"</strong> failing</div>"+
+          (s.swdTotal>0?"<div class='school-stat' style='background:#f5f3ff;color:#7c3aed'>SWD fail: <strong>"+s.swdFail+"</strong></div>":"")+
+          (s.ellTotal>0?"<div class='school-stat' style='background:#f0f9ff;color:#0369a1'>ELL fail: <strong>"+s.ellFail+"</strong></div>":"")+
+        "</div>"+
+        "<button class='drill-btn' data-id='"+s.id+"' data-name='"+s.name.replace(/"/g,"&quot;")+"'>View Full Dashboard &#8594;</button>";
+      grid.appendChild(div);
+    });
+    // Event delegation for drill buttons — no inline onclick needed
+    grid.addEventListener("click",function(e){
+      var btn=e.target.closest(".drill-btn");
+      if(btn) drillIntoSchool(btn.dataset.id,btn.dataset.name);
+    });
+  }catch(e){grid.innerHTML="<div class='empty-state'><h3>Error: "+e.message+"</h3></div>";}
+}
+
+async function drillIntoSchool(schoolId,schoolName){
+  document.getElementById("schools-list-view").style.display="none";
+  document.getElementById("school-drill-view").style.display="block";
+  document.getElementById("drill-school-name").textContent=schoolName;
+  document.getElementById("drill-school-sub").textContent="Loading...";
+  drillSchoolName=schoolName;
+  try{
+    var year=val("sc-year"),quarter=val("sc-quarter");
+    var reports=await fetchReports(year,quarter,"");
+    drillData=reports.filter(function(r){return (r.schoolId||"unassigned")===schoolId;});
+    var ts=sum(drillData,"total"),tp=sum(drillData,"passing"),tf=sum(drillData,"failing");
+    var swdT=sum(drillData,"swdTotal"),swdF=sum(drillData,"swdFail");
+    var ellT=sum(drillData,"ellTotal"),ellF=sum(drillData,"ellFail");
+    var pr=ts>0?Math.round(tp/ts*100):0;
+    var teachers=new Set(drillData.map(function(r){return r.teacherId||r.teacherEmail;})).size;
+    document.getElementById("drill-school-sub").textContent=year+(quarter?" · "+quarter:" · All Quarters")+" · "+teachers+" teachers · "+drillData.length+" submissions";
+    document.getElementById("drill-kpi-grid").innerHTML=
+      kpi("Total Students",ts.toLocaleString())+
+      kpi("Pass Rate",pr+"%",tp.toLocaleString()+" passing","color:"+(pr>=75?"#15803d":pr>=60?"#854d0e":"#dc2626"))+
+      kpi("Failing",tf.toLocaleString(),"","color:#dc2626")+
+      kpi("SWD Failing",swdF,"of "+swdT,"color:#7c3aed","border-left:3px solid #7c3aed","color:#7c3aed")+
+      kpi("ELL Failing",ellF,"of "+ellT,"color:#0369a1","border-left:3px solid #0369a1","color:#0369a1");
+    var byT={};
+    drillData.forEach(function(r){
+      var n=r.teacherName||r.teacherEmail||"Unknown";
+      if(!byT[n]) byT[n]={subs:0,total:0,passing:0,swdFail:0,ellFail:0};
+      byT[n].subs++;byT[n].total+=(r.summary&&r.summary.total)||0;byT[n].passing+=(r.summary&&r.summary.passing)||0;
+      byT[n].swdFail+=(r.summary&&r.summary.swdFail)||0;byT[n].ellFail+=(r.summary&&r.summary.ellFail)||0;
+    });
+    document.getElementById("drill-teacher-body").innerHTML=Object.entries(byT).map(function(e){
+      var n=e[0],d=e[1],rate=d.total>0?Math.round(d.passing/d.total*100):0;
+      return "<tr><td style='font-weight:500'>"+n+"</td><td>"+d.subs+"</td><td>"+d.total.toLocaleString()+"</td><td>"+d.passing.toLocaleString()+"</td><td><span class='badge-pass "+bc(rate)+"'>"+rate+"%</span></td><td style='color:#7c3aed;font-weight:600'>"+d.swdFail+"</td><td style='color:#0369a1;font-weight:600'>"+d.ellFail+"</td></tr>";
+    }).join("");
+    setTimeout(function(){renderDrillCharts(drillData);},50);
+  }catch(e){document.getElementById("drill-school-sub").textContent="Error: "+e.message;}
+}
+
+function closeDrill(){
+  document.getElementById("school-drill-view").style.display="none";
+  document.getElementById("schools-list-view").style.display="block";
+}
+
+function renderDrillCharts(reports){
+  var byT={};
+  reports.forEach(function(r){var n=r.teacherName||r.teacherEmail||"Unknown";if(!byT[n])byT[n]={p:0,t:0};byT[n].p+=(r.summary&&r.summary.passing)||0;byT[n].t+=(r.summary&&r.summary.total)||0;});
+  var tLabels=Object.keys(byT),tRates=tLabels.map(function(l){return byT[l].t>0?Math.round(byT[l].p/byT[l].t*100):0;});
+  destroyChart("drillTeacherChart");
+  var c1=document.getElementById("drill-teacher-chart");
+  if(c1) window.drillTeacherChart=new Chart(c1,{type:"bar",data:{labels:tLabels,datasets:[{data:tRates,backgroundColor:tRates.map(function(r){return r>=75?"#22c55e80":r>=60?"#eab30880":"#dc262680";}),borderColor:tRates.map(function(r){return r>=75?"#22c55e":r>=60?"#eab308":"#dc2626";}),borderWidth:2,borderRadius:5}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}}},y:{grid:{display:false}}}}});
+  var t={r1:0,r2:0,r3:0,r4:0,r5:0,r6:0};
+  reports.forEach(function(r){if(r.summary){["r1","r2","r3","r4","r5","r6"].forEach(function(k){t[k]+=(r.summary[k]||0);});}});
+  destroyChart("drillDistChart");
+  var c2=document.getElementById("drill-dist-chart");
+  if(c2) window.drillDistChart=new Chart(c2,{type:"doughnut",data:{labels:["0-55","56-64","65-79","80-89","90-94","95-100"],datasets:[{data:[t.r1,t.r2,t.r3,t.r4,t.r5,t.r6],backgroundColor:["#dc2626","#f97316","#eab308","#22c55e","#10b981","#059669"],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right"}}}});
+  var sRates=SUBJECTS.map(function(s){var rr=reports.filter(function(r){return r.subject===s;});var tt=rr.reduce(function(a,r){return a+((r.summary&&r.summary.total)||0);},0),tp=rr.reduce(function(a,r){return a+((r.summary&&r.summary.passing)||0);},0);return tt>0?Math.round(tp/tt*100):null;});
+  destroyChart("drillSubjectChart");
+  var c3=document.getElementById("drill-subject-chart");
+  if(c3) window.drillSubjectChart=new Chart(c3,{type:"bar",data:{labels:SUBJECTS,datasets:[{data:sRates,backgroundColor:"#3d5af180",borderColor:"#3d5af1",borderWidth:2,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:35}}}}});
+  var qRates=Object.keys(QMAP).map(function(qk){var qr=reports.filter(function(r){return r.quarter===qk;});var qt=qr.reduce(function(a,r){return a+((r.summary&&r.summary.total)||0);},0),qp=qr.reduce(function(a,r){return a+((r.summary&&r.summary.passing)||0);},0);return qt>0?Math.round(qp/qt*100):null;});
+  destroyChart("drillTrendChart");
+  var c4=document.getElementById("drill-trend-chart");
+  if(c4) window.drillTrendChart=new Chart(c4,{type:"line",data:{labels:Object.values(QMAP),datasets:[{label:"Pass Rate %",data:qRates,borderColor:"#3d5af1",backgroundColor:"#3d5af120",tension:.4,fill:true,pointRadius:6,pointBackgroundColor:"#3d5af1"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+}
+
+// ── COMPARE ───────────────────────────────────────────────────
+async function loadCompare(){
+  var year=val("cmp-year"),quarter=val("cmp-quarter"),subject=val("cmp-subject");
+  try{
+    var reports=await fetchReports(year,quarter,subject);
+    var schools=groupBySchool(reports);
+    var labels=schools.map(function(s){return s.name;});
+    destroyChart("cmpPassChart");
+    var c1=document.getElementById("cmp-pass-chart");
+    if(c1) window.cmpPassChart=new Chart(c1,{type:"bar",data:{labels:labels,datasets:[{label:"Pass Rate %",data:schools.map(function(s){return s.passRate;}),backgroundColor:SCHOOL_COLORS.slice(0,schools.length).map(function(c){return c+"99";}),borderColor:SCHOOL_COLORS.slice(0,schools.length),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+    destroyChart("cmpEquityChart");
+    var c2=document.getElementById("cmp-equity-chart");
+    if(c2) window.cmpEquityChart=new Chart(c2,{type:"bar",data:{labels:labels,datasets:[{label:"SWD Fail %",data:schools.map(function(s){return s.swdFailRate;}),backgroundColor:"#7c3aed80",borderColor:"#7c3aed",borderWidth:2,borderRadius:4},{label:"ELL Fail %",data:schools.map(function(s){return s.ellFailRate;}),backgroundColor:"#0369a180",borderColor:"#0369a1",borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top"}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+    var ranked=schools.slice().sort(function(a,b){return b.passRate-a.passRate;});
+    document.getElementById("cmp-table-body").innerHTML=ranked.map(function(s,i){
+      var gfr=s.total>0?Math.round(s.genFail/s.total*100):0;
+      return "<tr><td style='font-weight:600'>"+s.name+"</td><td>"+s.total.toLocaleString()+"</td><td><span class='badge-pass "+bc(s.passRate)+"'>"+s.passRate+"%</span></td><td style='color:#15803d'>"+gfr+"%</td><td style='color:#7c3aed;font-weight:600'>"+s.swdFailRate+"%</td><td style='color:#0369a1;font-weight:600'>"+s.ellFailRate+"%</td><td style='font-weight:700;color:var(--navy)'>#"+(i+1)+"</td></tr>";
+    }).join("");
+  }catch(e){console.error(e);}
+}
+
+// ── DISTRICT REPORTS ──────────────────────────────────────────
+async function loadDistrictReports(){
+  var year=val("rpt-year"),quarter=val("rpt-quarter");
+  document.getElementById("rpt-kpi-grid").innerHTML="<div class='kpi-card'><div class='kpi-label'>Loading</div><div class='kpi-value' style='font-size:20px'>&#9203;</div></div>";
+  try{
+    var reports=await fetchReports(year,quarter,"");
+    var schools=groupBySchool(reports);
+    var T={total:0,passing:0,failing:0,swdFail:0,ellFail:0};
+    schools.forEach(function(s){T.total+=s.total;T.passing+=s.passing;T.failing+=s.failing;T.swdFail+=s.swdFail;T.ellFail+=s.ellFail;});
+    var dr=T.total>0?Math.round(T.passing/T.total*100):0;
+    var allTeachers=new Set(reports.map(function(r){return r.teacherId||r.teacherEmail;})).size;
+    document.getElementById("rpt-kpi-grid").innerHTML=
+      kpi("Schools",schools.length)+
+      kpi("District Students",T.total.toLocaleString(),allTeachers+" teachers")+
+      kpi("District Pass Rate",dr+"%","","color:"+(dr>=75?"#15803d":dr>=60?"#854d0e":"#dc2626"))+
+      kpi("SWD Failing",T.swdFail.toLocaleString(),"","color:#7c3aed","border-left:3px solid #7c3aed","color:#7c3aed")+
+      kpi("ELL Failing",T.ellFail.toLocaleString(),"","color:#0369a1","border-left:3px solid #0369a1","color:#0369a1");
+    var rows=[];
+    schools.forEach(function(s){
+      SUBJECTS.forEach(function(sub){
+        var sr=s.reports.filter(function(r){return r.subject===sub;});
+        if(!sr.length) return;
+        var st=sr.reduce(function(a,r){return a+((r.summary&&r.summary.total)||0);},0);
+        var sp=sr.reduce(function(a,r){return a+((r.summary&&r.summary.passing)||0);},0);
+        var sf=sr.reduce(function(a,r){return a+((r.summary&&r.summary.failing)||0);},0);
+        var swf=sr.reduce(function(a,r){return a+((r.summary&&r.summary.swdFail)||0);},0);
+        var elf=sr.reduce(function(a,r){return a+((r.summary&&r.summary.ellFail)||0);},0);
+        var rate=st>0?Math.round(sp/st*100):0;
+        rows.push("<tr><td style='font-weight:600'>"+s.name+"</td><td>"+sub+"</td><td>"+new Set(sr.map(function(r){return r.teacherId||r.teacherEmail;})).size+"</td><td>"+st.toLocaleString()+"</td><td style='color:#15803d'>"+sp.toLocaleString()+"</td><td style='color:#dc2626'>"+sf.toLocaleString()+"</td><td><span class='badge-pass "+bc(rate)+"'>"+rate+"%</span></td><td style='color:#7c3aed;font-weight:600'>"+swf+"</td><td style='color:#0369a1;font-weight:600'>"+elf+"</td></tr>");
+      });
+    });
+    document.getElementById("rpt-table-body").innerHTML=rows.join("")||"<tr><td colspan='9' style='text-align:center;color:var(--text-3);padding:2rem'>No data for selected filters</td></tr>";
+    setTimeout(function(){
+      var qRates=Object.keys(QMAP).map(function(qk){var qr=reports.filter(function(r){return r.quarter===qk;});var qt=qr.reduce(function(a,r){return a+((r.summary&&r.summary.total)||0);},0),qp=qr.reduce(function(a,r){return a+((r.summary&&r.summary.passing)||0);},0);return qt>0?Math.round(qp/qt*100):null;});
+      destroyChart("rptTrendChart");
+      var c1=document.getElementById("rpt-trend-chart");
+      if(c1) window.rptTrendChart=new Chart(c1,{type:"line",data:{labels:Object.values(QMAP),datasets:[{label:"District Pass Rate %",data:qRates,borderColor:"#1a2856",backgroundColor:"#1a285620",tension:.4,fill:true,pointRadius:6,pointBackgroundColor:"#1a2856"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false}}}}});
+      var sRates=SUBJECTS.map(function(s){var sr=reports.filter(function(r){return r.subject===s;});var tt=sr.reduce(function(a,r){return a+((r.summary&&r.summary.total)||0);},0),tp=sr.reduce(function(a,r){return a+((r.summary&&r.summary.passing)||0);},0);return tt>0?Math.round(tp/tt*100):null;});
+      destroyChart("rptSubjectChart");
+      var c2=document.getElementById("rpt-subject-chart");
+      if(c2) window.rptSubjectChart=new Chart(c2,{type:"bar",data:{labels:SUBJECTS,datasets:[{data:sRates,backgroundColor:sRates.map(function(r){return r===null?"#e4e7f0":r>=75?"#22c55e80":r>=60?"#eab30880":"#dc262680";}),borderColor:sRates.map(function(r){return r===null?"#e4e7f0":r>=75?"#22c55e":r>=60?"#eab308":"#dc2626";}),borderWidth:2,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:function(v){return v+"%";}},grid:{color:"#e4e7f0"}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:35}}}}});
+    },50);
+  }catch(e){document.getElementById("rpt-kpi-grid").innerHTML="<div class='kpi-card'><div class='kpi-label' style='color:#dc2626'>Error</div><div class='kpi-sub'>"+e.message+"</div></div>";}
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+async function loadSettings(){
+  try{
+    var adminSnap=await db.ref("config/passcodes/admin").get();
+    var superSnap=await db.ref("config/passcodes/superintendent").get();
+    var adminVal=adminSnap.exists()?adminSnap.val():null;
+    var superVal=superSnap.exists()?superSnap.val():null;
+    var am=document.getElementById("admin-passcode-msg");
+    var sm=document.getElementById("super-passcode-msg");
+    if(adminVal){am.innerHTML="&#10003; Current passcode: <strong style='font-family:monospace;background:#e8ecf4;padding:1px 8px;border-radius:4px;font-size:13px'>"+adminVal+"</strong>";am.style.color="#15803d";}
+    else{am.textContent="No passcode set — anyone can register as admin.";am.style.color="#854d0e";}
+    if(superVal){sm.innerHTML="&#10003; Current passcode: <strong style='font-family:monospace;background:#e8ecf4;padding:1px 8px;border-radius:4px;font-size:13px'>"+superVal+"</strong>";sm.style.color="#15803d";}
+    else{sm.textContent="No passcode set — anyone can register as superintendent.";sm.style.color="#854d0e";}
+  }catch(e){console.error(e);}
+  loadSchoolManager();
+}
+
+async function savePasscode(role){
+  var inputId=role==="admin"?"admin-passcode-input":"super-passcode-input";
+  var msgId=role==="admin"?"admin-passcode-msg":"super-passcode-msg";
+  var val2=document.getElementById(inputId).value.trim();
+  if(!val2){document.getElementById(msgId).textContent="Please enter a passcode.";document.getElementById(msgId).style.color="#dc2626";return;}
+  try{
+    await db.ref("config/passcodes/"+role).set(val2);
+    document.getElementById(inputId).value="";
+    document.getElementById(msgId).innerHTML="&#10003; Saved! Passcode: <strong style='font-family:monospace;background:#e8ecf4;padding:1px 8px;border-radius:4px;font-size:13px'>"+val2+"</strong>";
+    document.getElementById(msgId).style.color="#15803d";
+  }catch(e){document.getElementById(msgId).textContent="Error: "+e.message;document.getElementById(msgId).style.color="#dc2626";}
+}
+
+async function loadSchoolManager(){
+  var list=document.getElementById("schools-manager-list");
+  if(!list) return;
+  try{
+    var snap=await db.ref("config/schools").get();
+    var dynamic=snap.exists()?snap.val():[];
+    var all=[...new Set([...DEFAULT_SCHOOLS,...dynamic])];
+    list.innerHTML=all.map(function(s){
+      var isDefault=DEFAULT_SCHOOLS.includes(s);
+      return "<div style='display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surface-2);border-radius:8px;margin-bottom:6px;font-size:14px'>"+
+        "<span>"+s+(isDefault?" <span style='font-size:11px;color:var(--text-3);background:#e4e7f0;padding:2px 7px;border-radius:10px;margin-left:6px'>default</span>":"")+"</span>"+
+        (!isDefault?"<button data-school=\""+s+"\" class=\"remove-school-btn\" style=\"background:none;border:none;color:#dc2626;cursor:pointer;font-size:18px;line-height:1;padding:0 4px\">&times;</button>":"<span style=\"font-size:12px;color:var(--text-3)\">built-in</span>")+
+        "</div>";
+    }).join("");
+  }catch(e){list.innerHTML="<div style='color:#dc2626;font-size:13px'>Error: "+e.message+"</div>";}
+  // Wire up remove buttons via event delegation
+  list.onclick=function(e){
+    var btn=e.target.closest(".remove-school-btn");
+    if(btn) removeSchool(btn.dataset.school);
+  };
+}
+
+async function addSchool(){
+  var input=document.getElementById("new-school-input");
+  var name=input.value.trim();
+  if(!name) return;
+  try{
+    var snap=await db.ref("config/schools").get();
+    var existing=snap.exists()?snap.val():[];
+    if(!existing.includes(name)&&!DEFAULT_SCHOOLS.includes(name)){existing.push(name);await db.ref("config/schools").set(existing);}
+    input.value="";
+    loadSchoolManager();
+  }catch(e){alert("Error: "+e.message);}
+}
+
+async function removeSchool(name){
+  if(!confirm('Remove "'+name+'" from the school list?')) return;
+  try{
+    var snap=await db.ref("config/schools").get();
+    var existing=snap.exists()?snap.val():[];
+    await db.ref("config/schools").set(existing.filter(function(s){return s!==name;}));
+    loadSchoolManager();
+  }catch(e){alert("Error: "+e.message);}
+}
+
+// ── PDF EXPORTS ───────────────────────────────────────────────
+function exportOverviewPDF(){
+  if(!window.jspdf){alert("PDF library loading, please try again.");return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:"landscape",unit:"mm",format:"letter"});
+  var W=279.4,M=14,C=W-M*2;
+  var navy=[26,40,86],white=[255,255,255];
+  var y=14;
+  doc.setFillColor.apply(doc,navy);doc.rect(0,0,W,22,"F");
+  doc.setTextColor.apply(doc,white);doc.setFontSize(14);doc.setFont("helvetica","bold");
+  doc.text("Roosevelt School District - Superintendent Overview",M,10);
+  doc.setFontSize(8);doc.setFont("helvetica","normal");
+  doc.text((val("ov-year")||"")+" | "+(val("ov-quarter")||"All Quarters")+" | "+new Date().toLocaleDateString(),M,17);
+  y=30;
+  var cols=[52,22,18,22,20,20,18,20,20,20,20];
+  var hdrs=["School","Submissions","Teachers","Students","Passing","Failing","Pass%","SWD Total","SWD Fail","ELL Total","ELL Fail"];
+  doc.setFillColor(232,236,255);doc.rect(M,y,C,7,"F");
+  doc.setTextColor.apply(doc,navy);doc.setFontSize(7);doc.setFont("helvetica","bold");
+  var cx=M;hdrs.forEach(function(h,i){doc.text(h,cx+cols[i]/2,y+5,{align:"center"});cx+=cols[i];});y+=7;
+  var schools=groupBySchool(allReports);
+  schools.forEach(function(s,i){
+    doc.setFillColor(i%2===0?255:247,i%2===0?255:248,i%2===0?255:252);doc.rect(M,y,C,6,"F");
+    doc.setTextColor(26,31,54);doc.setFont("helvetica","normal");doc.setFontSize(7.5);
+    cx=M;[s.name.substring(0,26),s.reports.length,s.teacherCount,s.total,s.passing,s.failing,s.passRate+"%",s.swdTotal,s.swdFail,s.ellTotal,s.ellFail].forEach(function(v,j){doc.text(String(v),cx+cols[j]/2,y+4.2,{align:"center"});cx+=cols[j];});y+=6;
+  });
+  doc.save("District_Overview_"+new Date().toISOString().slice(0,10)+".pdf");
+}
+
+function exportDrillPDF(){
+  if(!window.jspdf){alert("PDF library loading.");return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:"landscape",unit:"mm",format:"letter"});
+  var W=279.4,M=14,C=W-M*2,navy=[26,40,86],white=[255,255,255];
+  var y=14;
+  doc.setFillColor.apply(doc,navy);doc.rect(0,0,W,22,"F");
+  doc.setTextColor.apply(doc,white);doc.setFontSize(13);doc.setFont("helvetica","bold");
+  doc.text(drillSchoolName+" - School Dashboard",M,10);
+  doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text(new Date().toLocaleDateString(),W-M,17,{align:"right"});
+  y=30;
+  var byT={};drillData.forEach(function(r){var n=r.teacherName||r.teacherEmail||"Unknown";if(!byT[n])byT[n]={subs:0,total:0,passing:0,swdFail:0,ellFail:0};byT[n].subs++;byT[n].total+=(r.summary&&r.summary.total)||0;byT[n].passing+=(r.summary&&r.summary.passing)||0;byT[n].swdFail+=(r.summary&&r.summary.swdFail)||0;byT[n].ellFail+=(r.summary&&r.summary.ellFail)||0;});
+  var cols=[55,22,28,26,22,26,26];
+  var hdrs=["Teacher","Submissions","Total Students","Passing","Pass Rate","SWD Failing","ELL Failing"];
+  doc.setFillColor(232,236,255);doc.rect(M,y,C,7,"F");
+  doc.setTextColor.apply(doc,navy);doc.setFontSize(7);doc.setFont("helvetica","bold");
+  var cx=M;hdrs.forEach(function(h,i){doc.text(h,cx+cols[i]/2,y+5,{align:"center"});cx+=cols[i];});y+=7;
+  Object.entries(byT).forEach(function(e,i){
+    var n=e[0],d=e[1],rate=d.total>0?Math.round(d.passing/d.total*100):0;
+    doc.setFillColor(i%2===0?255:247,i%2===0?255:248,i%2===0?255:252);doc.rect(M,y,C,6,"F");
+    doc.setTextColor(26,31,54);doc.setFont("helvetica","normal");doc.setFontSize(7.5);
+    cx=M;[n.substring(0,28),d.subs,d.total,d.passing,rate+"%",d.swdFail,d.ellFail].forEach(function(v,j){doc.text(String(v),cx+cols[j]/2,y+4.2,{align:"center"});cx+=cols[j];});y+=6;
+  });
+  doc.save(drillSchoolName.replace(/\s+/g,"_")+"_Dashboard_"+new Date().toISOString().slice(0,10)+".pdf");
+}
+
+function exportDistrictReportPDF(){
+  if(!window.jspdf){alert("PDF library loading.");return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:"landscape",unit:"mm",format:"letter"});
+  var W=279.4,M=14,C=W-M*2,navy=[26,40,86],white=[255,255,255];
+  var y=14;
+  doc.setFillColor.apply(doc,navy);doc.rect(0,0,W,22,"F");
+  doc.setTextColor.apply(doc,white);doc.setFontSize(13);doc.setFont("helvetica","bold");
+  doc.text("Roosevelt School District - District Report",M,10);
+  doc.setFontSize(8);doc.setFont("helvetica","normal");
+  doc.text((val("rpt-year")||"")+" | "+(val("rpt-quarter")||"All Quarters")+" | "+new Date().toLocaleDateString(),M,17);
+  y=30;
+  var cols=[44,26,18,18,18,18,18,20,20];
+  var hdrs=["School","Subject","Teachers","Students","Passing","Failing","Pass%","SWD Fail","ELL Fail"];
+  doc.setFillColor(232,236,255);doc.rect(M,y,C,7,"F");
+  doc.setTextColor.apply(doc,navy);doc.setFontSize(7);doc.setFont("helvetica","bold");
+  var cx=M;hdrs.forEach(function(h,i){doc.text(h,cx+cols[i]/2,y+5,{align:"center"});cx+=cols[i];});y+=7;
+  var rows=document.querySelectorAll("#rpt-table-body tr");
+  rows.forEach(function(row,i){
+    var cells=row.querySelectorAll("td");if(cells.length<9)return;
+    if(y>190){doc.addPage();y=14;}
+    doc.setFillColor(i%2===0?255:247,i%2===0?255:248,i%2===0?255:252);doc.rect(M,y,C,6,"F");
+    doc.setTextColor(26,31,54);doc.setFont("helvetica","normal");doc.setFontSize(7.5);
+    cx=M;cols.forEach(function(w,j){var txt=(cells[j]&&cells[j].textContent||"").trim().substring(0,18);doc.text(txt,cx+w/2,y+4.2,{align:"center"});cx+=w;});y+=6;
+  });
+  doc.save("District_Report_"+new Date().toISOString().slice(0,10)+".pdf");
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────
+function val(id){var el=document.getElementById(id);return el?el.value:"";}
+function sum(arr,key){return arr.reduce(function(a,r){return a+((r.summary&&r.summary[key])||0);},0);}
+function destroyChart(name){if(window[name]){window[name].destroy();window[name]=null;}}
+</script>
+</body>
+</html>

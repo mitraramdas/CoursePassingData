@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABC School Course Passing Tracker — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2856;--navy-dark:#111c3d;--navy-mid:#243070;
+  --accent:#3d5af1;--accent-light:#e8ecff;
+  --gold:#e8a020;--success:#15803d;--success-bg:#dcfce7;
+  --danger:#dc2626;--danger-bg:#fee2e2;
+  --surface:#fff;--surface-2:#f7f8fc;--border:#e4e7f0;
+  --text:#1a1f36;--text-2:#4b5280;--text-3:#8890b0;
+  --sidebar-w:220px;--radius:10px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(26,40,86,.08),0 4px 16px rgba(26,40,86,.06);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--surface-2)}
+#main-screen{display:flex;height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:1.25rem 0;overflow-y:auto}
+.sidebar-top{flex:1}
+.sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 1.25rem 1.5rem;font-weight:600;font-size:16px;color:#fff}
+.logo-mark{width:44px;height:44px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:22px;flex-shrink:0}
+.logo-mark.sm{width:30px;height:30px;font-size:15px;border-radius:7px}
+.nav-items{display:flex;flex-direction:column;gap:2px;padding:0 .75rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.65);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff;font-weight:500}
+.sidebar-bottom{padding:1rem .75rem 0;border-top:1px solid rgba(255,255,255,.1)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px 6px;margin-bottom:8px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-info div:first-child{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:rgba(255,255,255,.5);text-transform:capitalize}
+.content{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+.tab{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;gap:1rem;flex-wrap:wrap}
+.page-header h1{font-size:24px;font-weight:600}
+.page-sub{font-size:14px;color:var(--text-3);margin-top:3px}
+.header-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.card-header h2,.card-header h3{font-size:17px;font-weight:600}
+.table-wrap{overflow-x:auto;margin:0 -1.5rem;padding:0 1.5rem}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{padding:10px 12px;text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.range{text-align:center;color:var(--accent)}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:8px 12px;vertical-align:middle}
+tbody tr:hover{background:var(--surface-2)}
+.range-input{text-align:center}
+input[type="text"],input[type="email"],input[type="number"],select{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;color:var(--text);background:#fff;transition:border .15s;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(61,90,241,.08)}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s}
+.btn-primary{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-secondary{padding:7px 16px;background:var(--accent-light);color:var(--accent);border:none;border-radius:var(--radius);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn-secondary:hover{background:#d4dafe}
+.btn-ghost{padding:8px 16px;background:transparent;color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius);font-size:14px}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn-ghost.full{width:100%;margin-top:.5rem;text-align:center}
+.select-pill{padding:7px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;background:#fff;color:var(--text);cursor:pointer;width:auto}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow)}
+.kpi-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:8px}
+.kpi-value{font-size:28px;font-weight:600;color:var(--navy);line-height:1}
+.kpi-sub{font-size:12px;color:var(--text-3);margin-top:5px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.chart-card{padding:1.25rem}
+.chart-card h3{font-size:15px;font-weight:600;margin-bottom:1rem}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+.badge-pass{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-good{background:#dcfce7;color:#15803d}
+.badge-mid{background:#fef9c3;color:#854d0e}
+.badge-low{background:#fee2e2;color:#dc2626}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.role-teacher{background:#dbeafe;color:#1d4ed8}
+.role-admin{background:#fef3c7;color:#92400e}
+.role-support{background:#f0fdf4;color:#15803d}
+.role-assistant{background:#fae8ff;color:#7e22ce}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-3)}
+.empty-state h3{font-size:17px;font-weight:500;margin-bottom:6px;color:var(--text-2)}
+</style>
+</head>
+<body>
+<div id="main-screen">
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo"><div class="logo-mark sm">R</div><span>CPT Admin</span></div>
+      <div class="nav-items">
+        <a class="nav-item active" onclick="showTab('dashboard')" id="nav-dashboard">
+          <svg viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+          Admin Dashboard
+        </a>
+        <a class="nav-item" onclick="showTab('school')" id="nav-school">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          School Dashboard
+        </a>
+        <a class="nav-item" onclick="showTab('reports')" id="nav-reports">
+          <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+          Reports
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div class="user-info">
+          <div id="user-name-display">Admin</div>
+          <div id="user-role-display" class="user-role">Administrator</div>
+        </div>
+      </div>
+      <button class="btn-ghost full" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="tab-dashboard" class="tab">
+      <div class="page-header">
+        <div><h1>Admin Dashboard</h1><p class="page-sub">Period-by-period passing data for all teachers</p></div>
+        <div class="header-controls">
+          <select id="dash-year" class="select-pill" onchange="loadDashboard()">
+            <option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option>
+          </select>
+          <select id="dash-view" class="select-pill" onchange="loadDashboard()">
+            <option value="quarterly">Quarterly</option><option value="yearly">Full Year</option>
+          </select>
+          <select id="dash-quarter" class="select-pill" onchange="loadDashboard()">
+            <option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option>
+          </select>
+          <select id="dash-subject" class="select-pill" onchange="loadDashboard()">
+            <option value="">All Subjects</option><option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option>
+          </select>
+          <select id="dash-grade" class="select-pill" onchange="loadDashboard()">
+            <option value="">All Grades</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+          </select>
+          <select id="dash-teacher" class="select-pill" onchange="loadDashboard()"><option value="">All Teachers</option></select>
+          <button class="btn-secondary" onclick="exportDashPDF()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>Grade Distribution — All Periods</h3><div style="position:relative;height:220px"><canvas id="dist-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Pass Rate by Teacher</h3><div style="position:relative;height:220px"><canvas id="teacher-chart"></canvas></div></div>
+      </div>
+      <div class="charts-grid" style="margin-bottom:1.5rem">
+        <div class="card chart-card"><h3>Pass vs Fail by Subject Area</h3><div style="position:relative;height:220px"><canvas id="subject-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Pass Rate by Grade</h3><div style="position:relative;height:220px"><canvas id="grade-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Period-by-Period Breakdown</h3>
+          <input type="text" id="dash-search" placeholder="Search teacher..." style="width:200px" oninput="filterDashTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Teacher</th><th>Role</th><th>Period</th><th>Total</th>
+              <th class="range">0-55</th><th class="range">56-64</th><th class="range">65-79</th>
+              <th class="range">80-89</th><th class="range">90-94</th><th class="range">95-100</th>
+              <th style="color:#15803d">Gen Fail</th>
+              <th style="color:#7c3aed">SWD Total</th><th style="color:#7c3aed">SWD Fail</th>
+              <th style="color:#0369a1">ELL Total</th><th style="color:#0369a1">ELL Fail</th>
+              <th>Pass %</th><th>Date</th>
+            </tr></thead>
+            <tbody id="dash-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHOOL DASHBOARD -->
+    <div id="tab-school" class="tab" style="display:none">
+      <div class="page-header">
+        <div><h1>School Dashboard</h1><p class="page-sub">School-wide passing trends and summaries</p></div>
+        <div class="header-controls">
+          <select id="school-year" class="select-pill" onchange="loadSchoolDashboard()">
+            <option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option>
+          </select>
+          <select id="school-range" class="select-pill" onchange="loadSchoolDashboard()">
+            <option value="q1">Quarter 1</option><option value="q2">Quarter 2</option><option value="q3">Quarter 3</option><option value="q4">Quarter 4</option><option value="yearly">Full Year</option>
+          </select>
+          <select id="school-subject" class="select-pill" onchange="loadSchoolDashboard()">
+            <option value="">All Subjects</option><option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option>
+          </select>
+          <select id="school-grade" class="select-pill" onchange="loadSchoolDashboard()">
+            <option value="">All Grades</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+          </select>
+        </div>
+      </div>
+      <div class="kpi-grid" id="school-kpi-grid"></div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>Pass Rate Trend by Quarter</h3><div style="position:relative;height:220px"><canvas id="school-trend-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Grade Distribution</h3><div style="position:relative;height:220px"><canvas id="school-dist-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:1rem">Summary by Teacher</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Teacher</th><th>Role</th><th>Submissions</th><th>Total Students</th><th>Passing</th><th>Pass Rate</th><th style="color:#7c3aed">SWD Total</th><th style="color:#7c3aed">SWD Fail</th><th style="color:#0369a1">ELL Total</th><th style="color:#0369a1">ELL Fail</th></tr></thead>
+            <tbody id="school-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="tab-reports" class="tab" style="display:none">
+      <div class="page-header">
+        <div><h1>Reports</h1><p class="page-sub">Generate reports by subject, grade, or school year</p></div>
+        <div class="header-controls">
+          <select id="rpt-year" class="select-pill" onchange="loadReports()">
+            <option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option>
+          </select>
+          <select id="rpt-quarter" class="select-pill" onchange="loadReports()">
+            <option value="">All Quarters</option><option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option>
+          </select>
+          <select id="rpt-subject" class="select-pill" onchange="loadReports()">
+            <option value="">All Subjects</option><option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option>
+          </select>
+          <select id="rpt-grade" class="select-pill" onchange="loadReports()">
+            <option value="">All Grades</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+          </select>
+          <button class="btn-secondary" onclick="exportReportsPDF()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+      <div class="kpi-grid" id="rpt-kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Select filters above</div><div class="kpi-value" style="font-size:16px;color:var(--text-3)">—</div></div>
+      </div>
+      <div class="charts-grid">
+        <div class="card chart-card"><h3>Pass vs Fail by Subject</h3><div style="position:relative;height:220px"><canvas id="rpt-subject-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Pass Rate by Grade</h3><div style="position:relative;height:220px"><canvas id="rpt-grade-chart"></canvas></div></div>
+      </div>
+      <div class="charts-grid" style="margin-bottom:1.5rem">
+        <div class="card chart-card"><h3>Pass Rate Trend by Quarter</h3><div style="position:relative;height:220px"><canvas id="rpt-trend-chart"></canvas></div></div>
+        <div class="card chart-card"><h3>Grade Distribution</h3><div style="position:relative;height:220px"><canvas id="rpt-dist-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:1rem">Subject Area Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Subject</th><th>Teachers</th><th>Submissions</th><th>Total Students</th><th>Passing</th><th>Failing</th><th>Pass Rate</th></tr></thead>
+            <tbody id="rpt-subject-body">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:2rem">Use the filters above to load report data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyAVls41ZyZLH9qk5pScvjOGJOuD9CYoaHU",authDomain:"coursepassing.firebaseapp.com",databaseURL:"https://coursepassing-default-rtdb.firebaseio.com",projectId:"coursepassing",storageBucket:"coursepassing.firebasestorage.app",messagingSenderId:"556505993758",appId:"1:556505993758:web:1a2fd4c5fc48bb56f9540f"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.database();
+
+let currentUser=null,currentUserData=null,allReports=[],reportsData=[];
+let distChart=null,teacherChart=null,subjectChart=null,gradeChart=null;
+let schoolTrendChart=null,schoolDistChart=null;
+let rptSubjectChart=null,rptGradeChart=null,rptTrendChart=null,rptDistChart=null;
+
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    currentUser=user;
+    const snap=await db.ref('users/'+user.uid).get();
+    if(snap.exists()){
+      currentUserData=snap.val();
+    } else {
+      // No DB record yet — trust localStorage written by the login page
+      const stored=localStorage.getItem('rms_user');
+      currentUserData=stored ? JSON.parse(stored) : {name:user.email.split('@')[0],email:user.email,role:'admin'};
+      await db.ref('users/'+user.uid).set(currentUserData);
+    }
+    if(currentUserData.role==='superintendent'){window.location.href='superintendent.html';return;}
+    if(currentUserData.role!=='admin'){window.location.href='teacher.html';return;}
+    const name=currentUserData.name||user.email;
+    g('user-name-display').textContent=name;
+    g('user-role-display').textContent='Administrator'+(currentUserData.schoolName?' · '+currentUserData.schoolName:'');
+    g('user-avatar').textContent=name[0].toUpperCase();
+    loadDashboard();
+  }else{window.location.href='index.html';}
+});
+
+function logout(){auth.signOut();}
+
+function showTab(tab){
+  ['dashboard','school','reports'].forEach(t=>{
+    const el=g('tab-'+t);if(el)el.style.display='none';
+    const nav=g('nav-'+t);if(nav)nav.classList.remove('active');
+  });
+  const tabEl=g('tab-'+tab);if(tabEl)tabEl.style.display='block';
+  const navEl=g('nav-'+tab);if(navEl)navEl.classList.add('active');
+  if(tab==='dashboard')loadDashboard();
+  if(tab==='school')loadSchoolDashboard();
+  if(tab==='reports')loadReports();
+}
+
+async function loadDashboard(){
+  const view=g('dash-view')?.value||'quarterly';
+  const year=g('dash-year')?.value||'2025-2026';
+  const quarter=g('dash-quarter')?.value||'';
+  const subject=g('dash-subject')?.value||'';
+  const grade=g('dash-grade')?.value||'';
+  const teacherFilter=g('dash-teacher')?.value||'';
+  const dq=g('dash-quarter');if(dq)dq.style.display=view==='yearly'?'none':'';
+  g('kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label">Loading\u2026</div><div class="kpi-value" style="font-size:20px">\u23f3</div></div>';
+  g('dash-body').innerHTML='<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--text-3)">Loading\u2026</td></tr>';
+  try{
+    const snap=await db.ref('allReports').get();
+    allReports=[];const teacherMap={};
+    const mySchoolId=currentUserData.schoolId||null;
+    snap.forEach(ch=>{
+      const d=ch.val();
+      // Admins only see their own school's data
+      if(mySchoolId && d.schoolId && d.schoolId!==mySchoolId)return;
+      if(d.uid&&d.teacherName)teacherMap[d.uid]=d.teacherName;
+      const mY=!year||d.year===year;
+      const mQ=view==='yearly'||d.quarter===quarter;
+      const mS=!subject||d.subject===subject;
+      const mG=!grade||d.grade===grade;
+      const mT=!teacherFilter||d.uid===teacherFilter;
+      if(mY&&mQ&&mS&&mG&&mT)allReports.push({id:ch.key,...d});
+    });
+    allReports.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+    const sel=g('dash-teacher');
+    if(sel){
+      const prev=sel.value;
+      sel.innerHTML='<option value="">All Teachers</option>'+
+        Object.entries(teacherMap).sort((a,b)=>a[1].localeCompare(b[1]))
+          .map(([uid,name])=>'<option value="'+uid+'"'+(uid===prev?' selected':'')+'>'+name+'</option>').join('');
+    }
+    renderKPIs(allReports);
+    renderDashTable(allReports);
+    setTimeout(()=>{
+      renderDistChart(allReports);
+      renderTeacherChart(allReports);
+      renderSubjectChart(allReports,'subject-chart',subjectChart,c=>subjectChart=c);
+      renderGradeChart(allReports,'grade-chart',gradeChart,c=>gradeChart=c);
+    },50);
+  }catch(e){g('kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label" style="color:#dc2626">Error</div><div class="kpi-sub">'+e.message+'</div></div>';}
+}
+
+function renderKPIs(r){
+  const ts=r.reduce((a,x)=>a+(x.summary?.total||0),0);
+  const tp=r.reduce((a,x)=>a+(x.summary?.passing||0),0);
+  const or=ts>0?Math.round(tp/ts*100):0;
+  const pp=r.reduce((a,x)=>a+(x.periods?.length||0),0);
+  const swdT=r.reduce((a,x)=>a+(x.summary?.swdTotal||0),0);
+  const swdF=r.reduce((a,x)=>a+(x.summary?.swdFail||0),0);
+  const ellT=r.reduce((a,x)=>a+(x.summary?.ellTotal||0),0);
+  const ellF=r.reduce((a,x)=>a+(x.summary?.ellFail||0),0);
+  const swdR=swdT>0?Math.round(swdF/swdT*100):0;
+  const ellR=ellT>0?Math.round(ellF/ellT*100):0;
+  g('kpi-grid').innerHTML=
+    '<div class="kpi-card"><div class="kpi-label">Submissions</div><div class="kpi-value">'+r.length+'</div><div class="kpi-sub">across '+pp+' periods</div></div>'+
+    '<div class="kpi-card"><div class="kpi-label">Total Students</div><div class="kpi-value">'+ts.toLocaleString()+'</div><div class="kpi-sub">'+tp.toLocaleString()+' passing</div></div>'+
+    '<div class="kpi-card"><div class="kpi-label">Overall Pass Rate</div><div class="kpi-value" style="color:'+(or>=75?'#15803d':or>=60?'#854d0e':'#dc2626')+'">'+or+'%</div><div class="kpi-sub">'+(ts-tp).toLocaleString()+' failing</div></div>'+
+    '<div class="kpi-card" style="border-left:3px solid #7c3aed"><div class="kpi-label" style="color:#7c3aed">SWD Failing</div><div class="kpi-value" style="color:#7c3aed">'+swdF.toLocaleString()+'</div><div class="kpi-sub">of '+swdT.toLocaleString()+' SWD \u00b7 '+swdR+'% fail rate</div></div>'+
+    '<div class="kpi-card" style="border-left:3px solid #0369a1"><div class="kpi-label" style="color:#0369a1">ELL Failing</div><div class="kpi-value" style="color:#0369a1">'+ellF.toLocaleString()+'</div><div class="kpi-sub">of '+ellT.toLocaleString()+' ELL \u00b7 '+ellR+'% fail rate</div></div>';
+}
+
+function renderDistChart(reports){
+  const canvas=g('dist-chart');if(!canvas)return;
+  const t={r1:0,r2:0,r3:0,r4:0,r5:0,r6:0};
+  reports.forEach(r=>{if(r.summary){['r1','r2','r3','r4','r5','r6'].forEach(k=>{t[k]+=r.summary[k]||0;})}});
+  if(distChart){distChart.destroy();distChart=null;}
+  distChart=new Chart(canvas,{type:'bar',data:{labels:['0-55','56-64','65-79','80-89','90-94','95-100'],datasets:[{data:[t.r1,t.r2,t.r3,t.r4,t.r5,t.r6],backgroundColor:['#dc262680','#f9731680','#eab30880','#22c55e80','#10b98180','#05966980'],borderColor:['#dc2626','#f97316','#eab308','#22c55e','#10b981','#059669'],borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#e4e7f0'}},x:{grid:{display:false}}}}});
+}
+
+function renderTeacherChart(reports){
+  const canvas=g('teacher-chart');if(!canvas)return;
+  const bt={};
+  reports.forEach(r=>{const n=r.teacherName||r.teacherEmail||'Unknown';if(!bt[n])bt[n]={p:0,t:0};bt[n].p+=r.summary?.passing||0;bt[n].t+=r.summary?.total||0;});
+  const labels=Object.keys(bt),rates=labels.map(l=>bt[l].t>0?Math.round(bt[l].p/bt[l].t*100):0);
+  if(teacherChart){teacherChart.destroy();teacherChart=null;}
+  teacherChart=new Chart(canvas,{type:'bar',data:{labels,datasets:[{data:rates,backgroundColor:rates.map(r=>r>=75?'#22c55e80':r>=60?'#eab30880':'#dc262680'),borderColor:rates.map(r=>r>=75?'#22c55e':r>=60?'#eab308':'#dc2626'),borderWidth:2,borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}});
+}
+
+function renderSubjectChart(reports,canvasId,existingChart,setChart){
+  const canvas=g(canvasId);if(!canvas)return;
+  const subjects=['Math','ELA','STEAM','Science','History','Art','US History','Foreign Language','Home & Careers','Business'];
+  const pass=[],fail=[];
+  subjects.forEach(s=>{const rr=reports.filter(r=>r.subject===s);const tp=rr.reduce((a,r)=>a+(r.summary?.passing||0),0);const tt=rr.reduce((a,r)=>a+(r.summary?.total||0),0);pass.push(tp);fail.push(tt-tp);});
+  if(existingChart){existingChart.destroy();}
+  const c=new Chart(canvas,{type:'bar',data:{labels:subjects,datasets:[{label:'Passing',data:pass,backgroundColor:'#22c55e80',borderColor:'#22c55e',borderWidth:2,borderRadius:4},{label:'Failing',data:fail,backgroundColor:'#dc262680',borderColor:'#dc2626',borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{stacked:false,grid:{display:false},ticks:{font:{size:10},maxRotation:35}},y:{beginAtZero:true,grid:{color:'#e4e7f0'}}}}});
+  setChart(c);
+}
+
+function renderGradeChart(reports,canvasId,existingChart,setChart){
+  const canvas=g(canvasId);if(!canvas)return;
+  const grades=['Grade 6','Grade 7','Grade 8','Grade 9','Grade 10','Grade 11','Grade 12'];
+  const rates=grades.map(gr=>{const rr=reports.filter(r=>r.grade===gr);const tp=rr.reduce((a,r)=>a+(r.summary?.passing||0),0);const tt=rr.reduce((a,r)=>a+(r.summary?.total||0),0);return tt>0?Math.round(tp/tt*100):0;});
+  if(existingChart){existingChart.destroy();}
+  const c=new Chart(canvas,{type:'bar',data:{labels:['G6','G7','G8','G9','G10','G11','G12'],datasets:[{label:'Pass Rate %',data:rates,backgroundColor:rates.map(r=>r>=75?'#22c55e80':r>=60?'#eab30880':'#dc262680'),borderColor:rates.map(r=>r>=75?'#22c55e':r>=60?'#eab308':'#dc2626'),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#e4e7f0'}},x:{grid:{display:false}}}}});
+  setChart(c);
+}
+
+function renderDashTable(reports){
+  const tbody=g('dash-body');
+  if(!reports.length){tbody.innerHTML='<tr><td colspan="17" style="text-align:center;color:var(--text-3);padding:2rem">No data found for this filter.</td></tr>';return;}
+  const rl=role=>({teacher:'Teacher',admin:'Admin',support:'Support',assistant:'Assistant'})[role]||role||'--';
+  const rc=role=>'role-badge role-'+(role||'teacher');
+  const rows=[];
+  reports.forEach(r=>(r.periods||[]).forEach(p=>{
+    const pass=(p.r3||0)+(p.r4||0)+(p.r5||0)+(p.r6||0),total=p.total||0,rate=total>0?Math.round(pass/total*100):0;
+    rows.push({r,p,rate});
+  }));
+  tbody.innerHTML=rows.map(({r,p,rate})=>{
+    const bc=rate>=75?'badge-good':rate>=60?'badge-mid':'badge-low';
+    const dt=r.createdAt?new Date(r.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'--';
+    const swdT=p.swd?.total||0,swdF=p.swd?.failing||0,ellT=p.ell?.total||0,ellF=p.ell?.failing||0,genF=p.gen?.failing||0;
+    return '<tr>'+
+      '<td style="font-weight:500">'+(r.teacherName||r.teacherEmail||'--')+'</td>'+
+      '<td><span class="'+rc(r.teacherRole)+'">'+rl(r.teacherRole)+'</span></td>'+
+      '<td>'+p.name+'</td><td><strong>'+(p.total||0)+'</strong></td>'+
+      '<td class="range-input">'+(p.r1||0)+'</td><td class="range-input">'+(p.r2||0)+'</td>'+
+      '<td class="range-input">'+(p.r3||0)+'</td><td class="range-input">'+(p.r4||0)+'</td>'+
+      '<td class="range-input">'+(p.r5||0)+'</td><td class="range-input">'+(p.r6||0)+'</td>'+
+      '<td style="text-align:center;color:#15803d;font-weight:600">'+genF+'</td>'+
+      '<td style="text-align:center;color:#7c3aed">'+swdT+'</td>'+
+      '<td style="text-align:center;color:#7c3aed;font-weight:700">'+swdF+'</td>'+
+      '<td style="text-align:center;color:#0369a1">'+ellT+'</td>'+
+      '<td style="text-align:center;color:#0369a1;font-weight:700">'+ellF+'</td>'+
+      '<td><span class="badge-pass '+bc+'">'+rate+'%</span></td><td>'+dt+'</td></tr>';
+  }).join('');
+}
+
+function filterDashTable(){
+  const q=g('dash-search').value.toLowerCase();
+  renderDashTable(allReports.filter(r=>(r.teacherName||r.teacherEmail||'').toLowerCase().includes(q)));
+}
+
+async function loadSchoolDashboard(){
+  const rangeVal=g('school-range')?.value||'q1';
+  const year=g('school-year')?.value||'2025-2026';
+  const subject=g('school-subject')?.value||'';
+  const grade=g('school-grade')?.value||'';
+  const qMap={q1:'Quarter 1 - Progress Report',q2:'Quarter 2 - Progress Report',q3:'Quarter 3 - Progress Report',q4:'Quarter 4 - Final'};
+  g('school-kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label">Loading\u2026</div><div class="kpi-value" style="font-size:20px">\u23f3</div></div>';
+  try{
+    const snap=await db.ref('allReports').get();
+    let all=[];
+    snap.forEach(ch=>{const d=ch.val();if((!year||d.year===year)&&(!grade||d.grade===grade)&&(!subject||d.subject===subject))all.push({id:ch.key,...d});});
+    const filtered=rangeVal==='yearly'?all:all.filter(r=>r.quarter===qMap[rangeVal]);
+    const ts=filtered.reduce((a,r)=>a+(r.summary?.total||0),0);
+    const tp=filtered.reduce((a,r)=>a+(r.summary?.passing||0),0);
+    const or=ts>0?Math.round(tp/ts*100):0;
+    const teachers=new Set(filtered.map(r=>r.uid)).size;
+    const swdT=filtered.reduce((a,r)=>a+(r.summary?.swdTotal||0),0);
+    const swdF=filtered.reduce((a,r)=>a+(r.summary?.swdFail||0),0);
+    const ellT=filtered.reduce((a,r)=>a+(r.summary?.ellTotal||0),0);
+    const ellF=filtered.reduce((a,r)=>a+(r.summary?.ellFail||0),0);
+    const swdR=swdT>0?Math.round(swdF/swdT*100):0;
+    const ellR=ellT>0?Math.round(ellF/ellT*100):0;
+    g('school-kpi-grid').innerHTML=
+      '<div class="kpi-card"><div class="kpi-label">Total Students</div><div class="kpi-value">'+ts.toLocaleString()+'</div><div class="kpi-sub">'+teachers+' teachers</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Pass Rate</div><div class="kpi-value" style="color:'+(or>=75?'#15803d':or>=60?'#854d0e':'#dc2626')+'">'+or+'%</div><div class="kpi-sub">'+(ts-tp).toLocaleString()+' failing</div></div>'+
+      '<div class="kpi-card" style="border-left:3px solid #7c3aed"><div class="kpi-label" style="color:#7c3aed">SWD Failing</div><div class="kpi-value" style="color:#7c3aed">'+swdF.toLocaleString()+'</div><div class="kpi-sub">of '+swdT.toLocaleString()+' \u00b7 '+swdR+'% fail rate</div></div>'+
+      '<div class="kpi-card" style="border-left:3px solid #0369a1"><div class="kpi-label" style="color:#0369a1">ELL Failing</div><div class="kpi-value" style="color:#0369a1">'+ellF.toLocaleString()+'</div><div class="kpi-sub">of '+ellT.toLocaleString()+' \u00b7 '+ellR+'% fail rate</div></div>';
+    const byT={};
+    filtered.forEach(r=>{const n=r.teacherName||r.teacherEmail||'Unknown';if(!byT[n])byT[n]={role:r.teacherRole||'teacher',subs:0,total:0,passing:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0};byT[n].subs++;byT[n].total+=r.summary?.total||0;byT[n].passing+=r.summary?.passing||0;byT[n].swdTotal+=r.summary?.swdTotal||0;byT[n].swdFail+=r.summary?.swdFail||0;byT[n].ellTotal+=r.summary?.ellTotal||0;byT[n].ellFail+=r.summary?.ellFail||0;});
+    const rl=role=>({teacher:'Teacher',admin:'Admin',support:'Support',assistant:'Assistant'})[role]||role||'--';
+    const rc=role=>'role-badge role-'+(role||'teacher');
+    g('school-body').innerHTML=Object.entries(byT).map(([name,d])=>{
+      const rate=d.total>0?Math.round(d.passing/d.total*100):0,bc=rate>=75?'badge-good':rate>=60?'badge-mid':'badge-low';
+      return '<tr><td style="font-weight:500">'+name+'</td><td><span class="'+rc(d.role)+'">'+rl(d.role)+'</span></td><td>'+d.subs+'</td><td>'+d.total.toLocaleString()+'</td><td>'+d.passing.toLocaleString()+'</td><td><span class="badge-pass '+bc+'">'+rate+'%</span></td>'+
+        '<td style="color:#7c3aed;text-align:center">'+d.swdTotal+'</td><td style="color:#7c3aed;font-weight:700;text-align:center">'+d.swdFail+'</td>'+
+        '<td style="color:#0369a1;text-align:center">'+d.ellTotal+'</td><td style="color:#0369a1;font-weight:700;text-align:center">'+d.ellFail+'</td></tr>';
+    }).join('');
+    setTimeout(()=>{
+      const qLabels=['Q1','Q2','Q3','Q4'];
+      const qKeys=Object.values(qMap);
+      const qRates=qKeys.map(qk=>{const qr=all.filter(r=>r.quarter===qk),qt=qr.reduce((a,r)=>a+(r.summary?.total||0),0),qp=qr.reduce((a,r)=>a+(r.summary?.passing||0),0);return qt>0?Math.round(qp/qt*100):0;});
+      const tc=g('school-trend-chart');if(!tc)return;
+      if(schoolTrendChart){schoolTrendChart.destroy();schoolTrendChart=null;}
+      schoolTrendChart=new Chart(tc,{type:'line',data:{labels:qLabels,datasets:[{label:'Pass Rate %',data:qRates,borderColor:'#3d5af1',backgroundColor:'#3d5af120',tension:.4,fill:true,pointRadius:6,pointBackgroundColor:'#3d5af1'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#e4e7f0'}},x:{grid:{display:false}}}}});
+      const t2={r1:0,r2:0,r3:0,r4:0,r5:0,r6:0};
+      filtered.forEach(r=>{if(r.summary){['r1','r2','r3','r4','r5','r6'].forEach(k=>{t2[k]+=r.summary[k]||0;})}});
+      const dc=g('school-dist-chart');if(!dc)return;
+      if(schoolDistChart){schoolDistChart.destroy();schoolDistChart=null;}
+      schoolDistChart=new Chart(dc,{type:'doughnut',data:{labels:['0-55','56-64','65-79','80-89','90-94','95-100'],datasets:[{data:[t2.r1,t2.r2,t2.r3,t2.r4,t2.r5,t2.r6],backgroundColor:['#dc2626','#f97316','#eab308','#22c55e','#10b981','#059669'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}});
+    },50);
+  }catch(e){g('school-kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label" style="color:#dc2626">Error</div><div class="kpi-sub">'+e.message+'</div></div>';}
+}
+
+async function loadReports(){
+  const year=g('rpt-year')?.value||'2025-2026';
+  const quarter=g('rpt-quarter')?.value||'';
+  const subject=g('rpt-subject')?.value||'';
+  const grade=g('rpt-grade')?.value||'';
+  g('rpt-kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label">Loading\u2026</div><div class="kpi-value" style="font-size:20px">\u23f3</div></div>';
+  try{
+    const snap=await db.ref('allReports').get();
+    reportsData=[];
+    snap.forEach(ch=>{
+      const d=ch.val();
+      const mY=!year||d.year===year;
+      const mQ=!quarter||d.quarter===quarter;
+      const mS=!subject||d.subject===subject;
+      const mG=!grade||d.grade===grade;
+      if(mY&&mQ&&mS&&mG)reportsData.push({id:ch.key,...d});
+    });
+    const ts=reportsData.reduce((a,r)=>a+(r.summary?.total||0),0);
+    const tp=reportsData.reduce((a,r)=>a+(r.summary?.passing||0),0);
+    const or=ts>0?Math.round(tp/ts*100):0;
+    const subjects=new Set(reportsData.map(r=>r.subject).filter(Boolean)).size;
+    g('rpt-kpi-grid').innerHTML=
+      '<div class="kpi-card"><div class="kpi-label">Total Students</div><div class="kpi-value">'+ts.toLocaleString()+'</div><div class="kpi-sub">'+reportsData.length+' submissions</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Pass Rate</div><div class="kpi-value" style="color:'+(or>=75?'#15803d':or>=60?'#854d0e':'#dc2626')+'">'+or+'%</div><div class="kpi-sub">'+tp.toLocaleString()+' passing</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Failing</div><div class="kpi-value" style="color:#dc2626">'+(ts-tp).toLocaleString()+'</div><div class="kpi-sub">need intervention</div></div>'+
+      '<div class="kpi-card"><div class="kpi-label">Subjects</div><div class="kpi-value">'+subjects+'</div><div class="kpi-sub">content areas</div></div>';
+    const subjectList=['Math','ELA','STEAM','Science','History','Art','US History','Foreign Language','Home & Careers','Business'];
+    const bySubj={};
+    reportsData.forEach(r=>{const s=r.subject||'Unknown';if(!bySubj[s])bySubj[s]={teachers:new Set(),subs:0,total:0,passing:0};bySubj[s].teachers.add(r.uid);bySubj[s].subs++;bySubj[s].total+=r.summary?.total||0;bySubj[s].passing+=r.summary?.passing||0;});
+    g('rpt-subject-body').innerHTML=subjectList.filter(s=>bySubj[s]).map(s=>{
+      const d=bySubj[s],rate=d.total>0?Math.round(d.passing/d.total*100):0;
+      const bc=rate>=75?'badge-good':rate>=60?'badge-mid':'badge-low';
+      return '<tr><td style="font-weight:600">'+s+'</td><td>'+d.teachers.size+'</td><td>'+d.subs+'</td><td>'+d.total.toLocaleString()+'</td><td style="color:#15803d">'+d.passing.toLocaleString()+'</td><td style="color:#dc2626">'+(d.total-d.passing).toLocaleString()+'</td><td><span class="badge-pass '+bc+'">'+rate+'%</span></td></tr>';
+    }).join('');
+    setTimeout(()=>{
+      renderSubjectChart(reportsData,'rpt-subject-chart',rptSubjectChart,c=>rptSubjectChart=c);
+      renderGradeChart(reportsData,'rpt-grade-chart',rptGradeChart,c=>rptGradeChart=c);
+      const tc=g('rpt-trend-chart');if(!tc)return;
+      if(rptTrendChart){rptTrendChart.destroy();rptTrendChart=null;}
+      const qMap={'Quarter 1 - Progress Report':'Q1','Quarter 2 - Progress Report':'Q2','Quarter 3 - Progress Report':'Q3','Quarter 4 - Final':'Q4'};
+      const qKeys=Object.keys(qMap);
+      const qRates=qKeys.map(qk=>{const qr=reportsData.filter(r=>r.quarter===qk);const qt=qr.reduce((a,r)=>a+(r.summary?.total||0),0);const qp=qr.reduce((a,r)=>a+(r.summary?.passing||0),0);return qt>0?Math.round(qp/qt*100):null;});
+      rptTrendChart=new Chart(tc,{type:'line',data:{labels:Object.values(qMap),datasets:[{label:'Pass Rate %',data:qRates,borderColor:'#3d5af1',backgroundColor:'#3d5af120',tension:.4,fill:true,pointRadius:6,pointBackgroundColor:'#3d5af1'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#e4e7f0'}},x:{grid:{display:false}}}}});
+      const dc=g('rpt-dist-chart');if(!dc)return;
+      if(rptDistChart){rptDistChart.destroy();rptDistChart=null;}
+      const t={r1:0,r2:0,r3:0,r4:0,r5:0,r6:0};
+      reportsData.forEach(r=>{if(r.summary){['r1','r2','r3','r4','r5','r6'].forEach(k=>{t[k]+=r.summary[k]||0;})}});
+      rptDistChart=new Chart(dc,{type:'doughnut',data:{labels:['0-55','56-64','65-79','80-89','90-94','95-100'],datasets:[{data:[t.r1,t.r2,t.r3,t.r4,t.r5,t.r6],backgroundColor:['#dc2626','#f97316','#eab308','#22c55e','#10b981','#059669'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}});
+    },50);
+  }catch(e){g('rpt-kpi-grid').innerHTML='<div class="kpi-card"><div class="kpi-label" style="color:#dc2626">Error</div><div class="kpi-sub">'+e.message+'</div></div>';}
+}
+
+function exportDashPDF(){
+  if(!window.jspdf){alert('PDF library not loaded yet.');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'letter'});
+  const W=279.4,M=15,C=W-M*2,navy=[26,40,86],white=[255,255,255];
+  let y=15;
+  doc.setFillColor(...navy);doc.rect(0,0,W,22,'F');
+  doc.setTextColor(...white);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('ABC -- Admin Dashboard',M,10);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text((g('dash-view')?.value||'')+' | '+(g('dash-quarter')?.value||'All Quarters')+' | '+(g('dash-grade')?.value||'All Grades')+' | '+new Date().toLocaleDateString(),M,17);
+  y=30;
+  const cols=[38,18,22,14,14,14,14,14,14,14,18];
+  const hdrs=['Teacher','Role','Period','Total','0-55','56-64','65-79','80-89','90-94','95-100','Pass %'];
+  doc.setFillColor(232,236,255);doc.rect(M,y,C,7,'F');
+  doc.setTextColor(...navy);doc.setFontSize(7);doc.setFont('helvetica','bold');
+  let cx=M;hdrs.forEach((h,i)=>{doc.text(h,cx+cols[i]/2,y+5,{align:'center'});cx+=cols[i];});y+=7;
+  const rl=role=>({teacher:'Teacher',admin:'Admin',support:'Support',assistant:'Assistant'})[role]||role||'--';
+  allReports.forEach((r,ri)=>{
+    (r.periods||[]).forEach(p=>{
+      if(y>190){doc.addPage();y=15;}
+      doc.setFillColor(ri%2===0?255:247,ri%2===0?255:248,ri%2===0?255:252);doc.rect(M,y,C,6,'F');
+      doc.setTextColor(26,31,54);doc.setFont('helvetica','normal');doc.setFontSize(7);
+      const pass=p.r3+p.r4+p.r5+p.r6,rate=p.total>0?Math.round(pass/p.total*100):0;
+      cx=M;
+      [(r.teacherName||r.teacherEmail||'--').substring(0,20),rl(r.teacherRole),p.name,p.total,p.r1,p.r2,p.r3,p.r4,p.r5,p.r6,rate+'%'].forEach((v,j)=>{
+        doc.text(String(v),cx+cols[j]/2,y+4.5,{align:'center'});cx+=cols[j];
+      });y+=6;
+    });
+  });
+  doc.save('Admin_Dashboard_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+function exportReportsPDF(){
+  if(!window.jspdf){alert('PDF library not loaded yet.');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'letter'});
+  const W=279.4,M=15,C=W-M*2,navy=[26,40,86],white=[255,255,255];
+  let y=15;
+  doc.setFillColor(...navy);doc.rect(0,0,W,24,'F');
+  doc.setTextColor(...white);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('ABC School District -- Subject Reports',M,11);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  const filters=[g('rpt-year')?.value,g('rpt-quarter')?.value||'All Quarters',g('rpt-subject')?.value||'All Subjects',g('rpt-grade')?.value||'All Grades'].filter(Boolean).join(' | ');
+  doc.text(filters+' | '+new Date().toLocaleDateString(),M,18);
+  y=32;
+  doc.setFillColor(...navy);doc.roundedRect(M,y,C,7,2,2,'F');
+  doc.setTextColor(...white);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text('SUBJECT AREA SUMMARY',M+4,y+5);y+=11;
+  const cols=[50,20,22,28,24,24,26];
+  const hdrs=['Subject','Teachers','Submissions','Total Students','Passing','Failing','Pass Rate'];
+  doc.setFillColor(232,236,255);doc.rect(M,y,C,7,'F');
+  doc.setTextColor(...navy);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
+  let cx=M;hdrs.forEach((h,i)=>{doc.text(h,cx+cols[i]/2,y+5,{align:'center'});cx+=cols[i];});y+=7;
+  const subjectList=['Math','ELA','STEAM','Science','History','Art','US History','Foreign Language','Home & Careers','Business'];
+  const bySubj={};
+  reportsData.forEach(r=>{const s=r.subject||'Unknown';if(!bySubj[s])bySubj[s]={teachers:new Set(),subs:0,total:0,passing:0};bySubj[s].teachers.add(r.uid);bySubj[s].subs++;bySubj[s].total+=r.summary?.total||0;bySubj[s].passing+=r.summary?.passing||0;});
+  subjectList.filter(s=>bySubj[s]).forEach((s,i)=>{
+    const d=bySubj[s],rate=d.total>0?Math.round(d.passing/d.total*100):0;
+    doc.setFillColor(i%2===0?255:247,i%2===0?255:248,i%2===0?255:252);doc.rect(M,y,C,7,'F');
+    doc.setTextColor(26,31,54);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    cx=M;[s,d.teachers.size,d.subs,d.total.toLocaleString(),d.passing.toLocaleString(),(d.total-d.passing).toLocaleString(),rate+'%'].forEach((v,j)=>{doc.text(String(v),cx+cols[j]/2,y+5,{align:'center'});cx+=cols[j];});y+=7;
+  });
+  doc.save('Reports_'+(g('rpt-year')?.value||'2025-2026')+'_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+function g(id){return document.getElementById(id);}
+</script>
+</body>
+</html>

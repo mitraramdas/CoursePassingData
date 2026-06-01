@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABC Course Passing Tracker — Teacher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2856;--navy-dark:#111c3d;--navy-mid:#243070;
+  --accent:#3d5af1;--accent-light:#e8ecff;
+  --gold:#e8a020;--success:#15803d;--success-bg:#dcfce7;
+  --danger:#dc2626;--danger-bg:#fee2e2;
+  --surface:#fff;--surface-2:#f7f8fc;--border:#e4e7f0;
+  --text:#1a1f36;--text-2:#4b5280;--text-3:#8890b0;
+  --swd:#7c3aed;--swd-bg:#f5f3ff;--swd-border:#ddd8fe;
+  --ell:#0369a1;--ell-bg:#f0f9ff;--ell-border:#bae6fd;
+  --gen:#15803d;--gen-bg:#f0fdf4;--gen-border:#bbf7d0;
+  --sidebar-w:220px;--radius:10px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(26,40,86,.08),0 4px 16px rgba(26,40,86,.06);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--surface-2)}
+#main-screen{display:flex;height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:1.25rem 0;overflow-y:auto}
+.sidebar-top{flex:1}
+.sidebar-logo{display:flex;align-items:center;gap:8px;padding:0 1.25rem 1.5rem;font-weight:600;font-size:16px;color:#fff}
+.logo-mark.sm{width:30px;height:30px;font-size:15px;border-radius:7px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;flex-shrink:0}
+.nav-items{display:flex;flex-direction:column;gap:2px;padding:0 .75rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.65);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff;font-weight:500}
+.sidebar-bottom{padding:1rem .75rem 0;border-top:1px solid rgba(255,255,255,.1)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px 6px;margin-bottom:8px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-info div:first-child{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:rgba(255,255,255,.5);text-transform:capitalize}
+.content{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+.tab{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;gap:1rem;flex-wrap:wrap}
+.page-header h1{font-size:24px;font-weight:600}
+.page-sub{font-size:14px;color:var(--text-3);margin-top:3px}
+.header-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.steps{display:flex;align-items:center;margin-bottom:2rem}
+.step{display:flex;align-items:center;gap:8px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--border);color:var(--text-3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;transition:all .2s}
+.step.active .step-num{background:var(--navy);color:#fff}
+.step.done .step-num{background:var(--success);color:#fff}
+.step span{font-size:13px;color:var(--text-3);font-weight:500}
+.step.active span{color:var(--navy)}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.card-header h2,.card-header h3{font-size:17px;font-weight:600}
+.card-desc{font-size:14px;color:var(--text-3);margin-bottom:1.5rem;margin-top:-.25rem}
+.card-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);flex-wrap:wrap}
+
+/* PERIOD TABLE */
+.table-wrap{overflow-x:auto;margin:0 -1.5rem;padding:0 1.5rem}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:8px 10px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);border-bottom:2px solid var(--border);white-space:nowrap;background:var(--surface-2)}
+thead th.th-period{text-align:left}
+thead th.th-range{color:var(--accent)}
+thead th.th-fail{color:var(--danger)}
+
+/* Period group rows */
+.period-group-row td{padding:0;border:none}
+.period-divider td{background:var(--navy);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border:none}
+.period-divider td .period-name-text{font-size:13px;font-weight:600;letter-spacing:0;text-transform:none}
+.period-divider .del-btn{padding:2px 8px;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:16px;border-radius:4px;cursor:pointer;float:right;line-height:1}
+.period-divider .del-btn:hover{background:rgba(220,38,38,.5)}
+
+.subrow{border-bottom:1px solid var(--border)}
+.subrow:last-of-type{border-bottom:2px solid var(--border)}
+.subrow td{padding:5px 8px;vertical-align:middle}
+.subrow.gen{background:#fafffe}
+.subrow.swd{background:var(--swd-bg)}
+.subrow.ell{background:var(--ell-bg)}
+.subrow-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:12px;white-space:nowrap}
+.subrow-label.gen{background:var(--gen-bg);color:var(--gen);border:1px solid var(--gen-border)}
+.subrow-label.swd{background:var(--swd-bg);color:var(--swd);border:1px solid var(--swd-border)}
+.subrow-label.ell{background:var(--ell-bg);color:var(--ell);border:1px solid var(--ell-border)}
+.subrow td input[type="number"]{width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;background:#fff;text-align:center;transition:border .15s}
+.subrow td input:focus{outline:none;border-color:var(--accent);background:#fff}
+.subrow.swd td input{border-color:var(--swd-border);background:var(--swd-bg)}
+.subrow.swd td input:focus{border-color:var(--swd);background:#fff}
+.subrow.ell td input{border-color:var(--ell-border);background:var(--ell-bg)}
+.subrow.ell td input:focus{border-color:var(--ell);background:#fff}
+.fail-cell{text-align:center;font-weight:700;font-size:13px}
+.fail-val{display:inline-block;min-width:32px;padding:2px 6px;border-radius:5px;background:var(--danger-bg);color:var(--danger)}
+.fail-val.zero{background:var(--surface-2);color:var(--text-3)}
+.subtotal-cell{text-align:center;font-weight:600;color:var(--navy);font-size:13px}
+.period-total-row td{background:rgba(26,40,86,.05);font-size:12px;font-weight:600;padding:5px 10px;text-align:center;border-bottom:3px solid var(--navy)}
+.tfoot-row td{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:8px 10px;text-align:center;border:none}
+.tfoot-row td:first-child{text-align:left}
+
+/* FORM FIELDS */
+.field-group{display:flex;flex-direction:column;gap:5px}
+.field-group label{font-size:13px;font-weight:500;color:var(--text-2)}
+input[type="text"],input[type="email"],input[type="password"],textarea,select{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;color:var(--text);background:#fff;transition:border .15s;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(61,90,241,.08)}
+textarea{resize:vertical}
+.q-block{margin-bottom:1.75rem;display:flex;flex-direction:column;gap:10px}
+.q-label{font-size:15px;font-weight:500;color:var(--text);line-height:1.5}
+.q-label-sm{font-size:13px;font-weight:500;color:var(--text-2);margin-top:4px}
+.q-sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q-sub-grid.three{grid-template-columns:1fr 1fr 1fr}
+
+/* BUTTONS */
+button{font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s}
+.btn-primary{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-primary:disabled{opacity:.6;cursor:default}
+.btn-secondary{padding:7px 16px;background:var(--accent-light);color:var(--accent);border:none;border-radius:var(--radius);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn-secondary:hover{background:#d4dafe}
+.btn-ghost{padding:8px 16px;background:transparent;color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius);font-size:14px}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn-ghost.full{width:100%;margin-top:.5rem;text-align:center}
+.select-pill{padding:7px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;background:#fff;color:var(--text);cursor:pointer;width:auto}
+
+/* MESSAGES */
+.error-msg{background:var(--danger-bg);color:var(--danger);border-radius:var(--radius);padding:10px 14px;font-size:13px;margin-bottom:1rem}
+.success-msg{background:var(--success-bg);color:var(--success);border-radius:var(--radius);padding:10px 14px;font-size:13px;margin-bottom:1rem}
+.restore-banner{padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:500;display:none}
+
+/* SUMMARY PILLS */
+.summary-pills{flex:1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.pill{padding:4px 12px;border-radius:20px;font-weight:600;font-size:12px}
+
+/* REPORTS GRID */
+.reports-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.25rem}
+.report-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow)}
+.report-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
+.report-meta{font-size:13px;color:var(--text-3);margin-top:3px}
+.report-stats{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.stat-pill{font-size:12px;color:var(--text-2);background:var(--surface-2);padding:4px 10px;border-radius:20px}
+.stat-pill strong{color:var(--text)}
+.badge-pass{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-good{background:#dcfce7;color:#15803d}
+.badge-mid{background:#fef9c3;color:#854d0e}
+.badge-low{background:#fee2e2;color:#dc2626}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-3)}
+.empty-state h3{font-size:17px;font-weight:500;margin-bottom:6px;color:var(--text-2)}
+.empty-icon{font-size:40px;margin-bottom:1rem}
+@media(max-width:900px){.q-sub-grid,.q-sub-grid.three{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="main-screen">
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo"><div class="logo-mark sm">R</div><span>CPT</span></div>
+      <div class="nav-items">
+        <a class="nav-item active" onclick="showTab('submit')" id="nav-submit">
+          <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Submit Data
+        </a>
+        <a class="nav-item" onclick="showTab('my-reports')" id="nav-my-reports">
+          <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          My Reports
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">T</div>
+        <div class="user-info">
+          <div id="user-name-display">Teacher</div>
+          <div id="user-role-display" class="user-role">Teacher</div>
+        </div>
+      </div>
+      <button class="btn-ghost full" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <main class="content">
+    <!-- SUBMIT TAB -->
+    <div id="tab-submit" class="tab">
+      <div class="page-header">
+        <div><h1>Submit Course Data</h1><p class="page-sub">Enter passing rate data broken down by Gen Ed, SWD, and ELL</p></div>
+        <div class="header-controls">
+          <select id="report-year" class="select-pill" onchange="reloadDraft()">
+            <option>2023-2024</option><option>2024-2025</option><option selected>2025-2026</option><option>2026-2027</option><option>2027-2028</option>
+          </select>
+          <select id="report-quarter" class="select-pill" onchange="reloadDraft()">
+            <option>Quarter 1 - Progress Report</option><option>Quarter 2 - Progress Report</option><option>Quarter 3 - Progress Report</option><option>Quarter 4 - Final</option>
+          </select>
+          <select id="report-subject" class="select-pill" onchange="reloadDraft()">
+            <option>Math</option><option>ELA</option><option>STEAM</option><option>Science</option><option>History</option><option>Art</option><option>US History</option><option>Foreign Language</option><option>Home &amp; Careers</option><option>Business</option>
+          </select>
+          <select id="report-grade" class="select-pill" onchange="reloadDraft()">
+            <option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+          </select>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step active" id="step-1-ind"><div class="step-num">1</div><span>Grade Data</span></div>
+        <div class="step-line"></div>
+        <div class="step" id="step-2-ind"><div class="step-num">2</div><span>Reflection</span></div>
+        <div class="step-line"></div>
+        <div class="step" id="step-3-ind"><div class="step-num">3</div><span>Goals</span></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Course Passing Data</h2>
+              <p style="font-size:12px;color:var(--text-3);margin-top:3px">Each period is broken down by General Education, SWD, and ELL students</p>
+            </div>
+            <button class="btn-secondary" onclick="addPeriod()">+ Add Period</button>
+          </div>
+          <div id="restore-banner" class="restore-banner"></div>
+          <div class="table-wrap">
+            <table id="periods-table">
+              <thead>
+                <tr>
+                  <th class="th-period" style="width:130px">Period / Group</th>
+                  <th style="width:55px">Total</th>
+                  <th class="th-range">0-55</th>
+                  <th class="th-range">56-64</th>
+                  <th class="th-range">65-79</th>
+                  <th class="th-range">80-89</th>
+                  <th class="th-range">90-94</th>
+                  <th class="th-range">95-100</th>
+                  <th class="th-fail" style="width:60px">Failing</th>
+                </tr>
+              </thead>
+              <tbody id="periods-body"></tbody>
+              <tfoot id="periods-tfoot"></tfoot>
+            </table>
+          </div>
+          <div class="card-footer">
+            <div class="summary-pills" id="totals-row"></div>
+            <button class="btn-primary" onclick="nextStep(2)">Next: Reflection &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="step-2" style="display:none">
+        <div class="card">
+          <h2>Reflection Questions</h2>
+          <p class="card-desc">Help us understand your class performance data</p>
+          <div class="q-block">
+            <label class="q-label">1. What is your current passing rate?</label>
+            <input type="text" id="q1-overall" placeholder="Overall passing rate...">
+            <div class="q-sub-grid">
+              <div class="field-group"><label>a. Per Period?</label><input type="text" id="q1-period" placeholder="e.g. P1: 80%, P2: 75%"></div>
+              <div class="field-group"><label>b. Overall?</label><input type="text" id="q1-overall2" placeholder="e.g. 78%"></div>
+            </div>
+          </div>
+          <div class="q-block">
+            <label class="q-label">2. What makes the difference between classes with the best and lowest passing rates?</label>
+            <textarea id="q2-main" rows="3" placeholder="Share your thoughts..."></textarea>
+            <label class="q-label-sm">Please explain further:</label>
+            <textarea id="q2-explain" rows="2" placeholder="Additional explanation..."></textarea>
+            <div class="q-sub-grid three">
+              <div class="field-group"><label>a. Teaching Techniques?</label><input type="text" id="q2a"></div>
+              <div class="field-group"><label>b. Implementation Strategies?</label><input type="text" id="q2b"></div>
+              <div class="field-group"><label>c. Student Characteristics?</label><input type="text" id="q2c"></div>
+              <div class="field-group"><label>d. Additional staff in the room?</label><input type="text" id="q2d"></div>
+              <div class="field-group"><label>e. Other factors?</label><input type="text" id="q2e"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-ghost" onclick="nextStep(1)">&#8592; Back</button>
+            <button class="btn-primary" onclick="nextStep(3)">Next: Goals &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="step-3" style="display:none">
+        <div class="card">
+          <h2>Action Plans &amp; Goals</h2>
+          <p class="card-desc">Define strategies to help struggling students progress</p>
+          <div class="q-block">
+            <label class="q-label">3. What actions can be taken to move students from the 55-64 range to the 65-74 range?</label>
+            <textarea id="q3" rows="4" placeholder="Describe your action plan..."></textarea>
+          </div>
+          <div class="q-block">
+            <label class="q-label">4. What actions can be taken to move students from the 65-75 range to the 85-94 range?</label>
+            <textarea id="q4" rows="4" placeholder="Describe your action plan..."></textarea>
+          </div>
+          <div class="q-block">
+            <label class="q-label">5. What are attainable goals for the next 5 weeks?</label>
+            <textarea id="q5" rows="4" placeholder="List your 5-week goals..."></textarea>
+          </div>
+          <div id="submit-error" class="error-msg" style="display:none"></div>
+          <div id="submit-success" class="success-msg" style="display:none"></div>
+          <div class="card-footer">
+            <button class="btn-ghost" onclick="nextStep(2)">&#8592; Back</button>
+            <button class="btn-secondary" onclick="generatePDF()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export PDF
+            </button>
+            <button class="btn-primary" onclick="submitReport()" id="submit-btn">Submit Report &#10003;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY REPORTS TAB -->
+    <div id="tab-my-reports" class="tab" style="display:none">
+      <div class="page-header"><div><h1>My Reports</h1><p class="page-sub">All your submitted course passing data</p></div></div>
+      <div id="my-reports-list" class="reports-grid"></div>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyAVls41ZyZLH9qk5pScvjOGJOuD9CYoaHU",authDomain:"coursepassing.firebaseapp.com",databaseURL:"https://coursepassing-default-rtdb.firebaseio.com",projectId:"coursepassing",storageBucket:"coursepassing.firebasestorage.app",messagingSenderId:"556505993758",appId:"1:556505993758:web:1a2fd4c5fc48bb56f9540f"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.database();
+
+let currentUser=null,currentUserData=null;
+let periods=[],periodCounter=0,draftDebounce=null;
+
+// ── Auth Guard ──────────────────────────────────────────────
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    currentUser=user;
+    const snap=await db.ref('users/'+user.uid).get();
+    if(snap.exists()){
+      currentUserData=snap.val();
+    } else {
+      // No DB record yet — trust localStorage written by the login page
+      const stored=localStorage.getItem('rms_user');
+      currentUserData=stored ? JSON.parse(stored) : {name:user.email.split('@')[0],email:user.email,role:'teacher'};
+      await db.ref('users/'+user.uid).set(currentUserData);
+    }
+    if(currentUserData.role==='admin'){window.location.href='admin.html';return;}
+    const name=currentUserData.name||user.email;
+    g('user-name-display').textContent=name;
+    g('user-role-display').textContent=(currentUserData.role||'teacher').charAt(0).toUpperCase()+(currentUserData.role||'teacher').slice(1);
+    g('user-avatar').textContent=name[0].toUpperCase();
+    initSubmitTab();loadMyReports();
+  }else{window.location.href='index.html';}
+});
+function logout(){auth.signOut();}
+
+// ── Navigation ──────────────────────────────────────────────
+function showTab(tab){
+  ['submit','my-reports'].forEach(t=>{
+    const el=g('tab-'+t);if(el)el.style.display='none';
+    const nav=g('nav-'+t);if(nav)nav.classList.remove('active');
+  });
+  const tabEl=g('tab-'+tab);if(tabEl)tabEl.style.display='block';
+  const navEl=g('nav-'+tab);if(navEl)navEl.classList.add('active');
+  if(tab==='my-reports')loadMyReports();
+}
+
+// ── Steps ───────────────────────────────────────────────────
+function nextStep(n){
+  saveDraft();
+  [1,2,3].forEach(i=>{
+    const s=g('step-'+i);if(s)s.style.display=i===n?'block':'none';
+    const ind=g('step-'+i+'-ind');if(!ind)return;
+    ind.classList.remove('active','done');
+    if(i===n)ind.classList.add('active');
+    if(i<n)ind.classList.add('done');
+  });
+}
+
+// ── Init & Draft ────────────────────────────────────────────
+function initSubmitTab(){
+  periods=[];periodCounter=0;
+  g('periods-body').innerHTML='';
+  reloadDraft();nextStep(1);
+}
+function draftPath(){
+  return 'drafts/'+currentUser.uid+'/'+
+    encodeURIComponent(g('report-year')?.value||'2025-2026')+'__'+
+    encodeURIComponent(g('report-quarter').value)+'__'+
+    encodeURIComponent(g('report-subject')?.value||'Math')+'__'+
+    encodeURIComponent(g('report-grade').value);
+}
+async function reloadDraft(){
+  periods=[];periodCounter=0;
+  g('periods-body').innerHTML='';g('periods-tfoot').innerHTML='';
+  const fields=['q1-overall','q1-period','q1-overall2','q2-main','q2-explain','q2a','q2b','q2c','q2d','q2e','q3','q4','q5'];
+  fields.forEach(id=>{const el=g(id);if(el)el.value='';});
+  try{
+    const ds=await db.ref(draftPath()).get();
+    if(ds.exists()){restoreData(ds.val(),'draft');return;}
+    const rs=await db.ref('reports/'+currentUser.uid).get();
+    if(rs.exists()){
+      const qtr=g('report-quarter').value,grd=g('report-grade').value;
+      let best=null;
+      rs.forEach(ch=>{const d=ch.val();if(d.quarter===qtr&&d.grade===grd&&(!best||(d.submittedAt||0)>(best.submittedAt||0)))best=d;});
+      if(best){restoreData(best,'submitted');return;}
+    }
+  }catch(e){}
+  addPeriod();updateTotals();resetStepIndicators();
+}
+function resetStepIndicators(){
+  [1,2,3].forEach(i=>{
+    const s=g('step-'+i);if(s)s.style.display=i===1?'block':'none';
+    const ind=g('step-'+i+'-ind');if(!ind)return;
+    ind.classList.remove('active','done');if(i===1)ind.classList.add('active');
+  });
+}
+function restoreData(data,source){
+  (data.periods||[]).forEach(p=>{
+    addPeriod();
+    const id=periods[periods.length-1].id;
+    const s=(f,v)=>{const el=g('p'+id+'-'+f);if(el&&v!=null)el.value=v;};
+    s('name',p.name);
+    // Gen Ed
+    ['r1','r2','r3','r4','r5','r6'].forEach(r=>s('gen-'+r,p.gen?.[r]??p[r]??''));
+    // SWD
+    ['r1','r2','r3','r4','r5','r6'].forEach(r=>s('swd-'+r,p.swd?.[r]??''));
+    // ELL
+    ['r1','r2','r3','r4','r5','r6'].forEach(r=>s('ell-'+r,p.ell?.[r]??''));
+  });
+  const q=data.questions||{};
+  [['q1-overall',q.q1Overall],['q1-period',q.q1Period],['q1-overall2',q.q1Overall2],
+   ['q2-main',q.q2Main],['q2-explain',q.q2Explain],
+   ['q2a',q.q2a],['q2b',q.q2b],['q2c',q.q2c],['q2d',q.q2d],['q2e',q.q2e],
+   ['q3',q.q3],['q4',q.q4],['q5',q.q5]
+  ].forEach(([id,val])=>{const el=g(id);if(el&&val)el.value=val;});
+  updateTotals();resetStepIndicators();
+  const banner=g('restore-banner');
+  if(banner){
+    const ts=data.savedAt||data.submittedAt;
+    const time=ts?new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+    if(source==='draft'){banner.textContent='Draft restored'+(time?' \u00b7 last saved '+time:'');banner.style.cssText='display:block;background:#dbeafe;color:#1d4ed8;padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:500';}
+    else{banner.textContent='\u2713 Loaded from last submission'+(time?' \u00b7 '+time:'');banner.style.cssText='display:block;background:#dcfce7;color:#15803d;padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:500';}
+    setTimeout(()=>{banner.style.display='none';},6000);
+  }
+}
+function scheduleDraftSave(){if(draftDebounce)clearTimeout(draftDebounce);draftDebounce=setTimeout(saveDraft,800);}
+async function saveDraft(){if(!currentUser)return;try{await db.ref(draftPath()).set(collectFormData());}catch(e){}}
+function collectFormData(){
+  return{year:g('report-year')?.value||'2025-2026',quarter:g('report-quarter').value,subject:g('report-subject')?.value||'Math',grade:g('report-grade').value,
+    periods:getPeriodData(),
+    questions:{q1Overall:g('q1-overall')?.value||'',q1Period:g('q1-period')?.value||'',q1Overall2:g('q1-overall2')?.value||'',q2Main:g('q2-main')?.value||'',q2Explain:g('q2-explain')?.value||'',q2a:g('q2a')?.value||'',q2b:g('q2b')?.value||'',q2c:g('q2c')?.value||'',q2d:g('q2d')?.value||'',q2e:g('q2e')?.value||'',q3:g('q3')?.value||'',q4:g('q4')?.value||'',q5:g('q5')?.value||''},
+    savedAt:Date.now()};
+}
+
+// ── Period Table ────────────────────────────────────────────
+// Each period has 3 sub-rows: gen, swd, ell
+// Field naming: p{id}-{group}-r{1-6}  and  p{id}-name
+const RANGES=['r1','r2','r3','r4','r5','r6'];
+
+function numInput(id,cls){
+  return '<input type="number" min="0" placeholder="0" id="'+id+'" oninput="updateTotals();scheduleDraftSave()" class="'+cls+'">';
+}
+
+function addPeriod(){
+  periodCounter++;
+  const id=periodCounter;
+  periods.push({id});
+  const tbody=g('periods-body');
+
+  // ── Divider row (period name + delete) ──
+  const divRow=document.createElement('tr');
+  divRow.className='period-divider';
+  divRow.id='period-divider-'+id;
+  divRow.innerHTML='<td colspan="9">'+
+    '<input type="text" placeholder="Period '+id+'" id="p'+id+'-name" oninput="scheduleDraftSave()" style="background:transparent;border:none;color:#fff;font-size:13px;font-weight:600;width:200px;padding:0;outline:none;">'+
+    '<button class="del-btn" onclick="removePeriod('+id+')" title="Remove period">&times;</button></td>';
+  tbody.appendChild(divRow);
+
+  // ── 3 sub-rows: Gen Ed, SWD, ELL ──
+  [
+    {key:'gen',label:'Gen Ed',cls:'gen'},
+    {key:'swd',label:'SWD',cls:'swd'},
+    {key:'ell',label:'ELL',cls:'ell'}
+  ].forEach(({key,label,cls})=>{
+    const tr=document.createElement('tr');
+    tr.className='subrow '+cls;
+    tr.id='period-subrow-'+id+'-'+key;
+    let cells='<td><span class="subrow-label '+cls+'">'+label+'</span></td>';
+    cells+='<td class="subtotal-cell" id="p'+id+'-'+key+'-total">0</td>';
+    RANGES.forEach(r=>{
+      cells+='<td style="text-align:center">'+numInput('p'+id+'-'+key+'-'+r,cls)+'</td>';
+    });
+    cells+='<td class="fail-cell"><span class="fail-val zero" id="p'+id+'-'+key+'-fail">0</span></td>';
+    tr.innerHTML=cells;
+    tbody.appendChild(tr);
+  });
+
+  // ── Period total row ──
+  const totRow=document.createElement('tr');
+  totRow.className='period-total-row';
+  totRow.id='period-total-'+id;
+  totRow.innerHTML='<td style="text-align:left;font-size:11px;color:var(--text-3);letter-spacing:.04em">PERIOD TOTAL</td>'+
+    '<td id="p'+id+'-total" style="font-weight:700;color:var(--navy)">0</td>'+
+    RANGES.map((_,i)=>'<td id="p'+id+'-sum-r'+(i+1)+'" style="color:var(--text-2)">0</td>').join('')+
+    '<td id="p'+id+'-fail-total" style="font-weight:700;color:var(--danger)">0</td>';
+  tbody.appendChild(totRow);
+
+  updateTotals();
+}
+
+function removePeriod(id){
+  periods=periods.filter(p=>p.id!==id);
+  ['period-divider-','period-subrow-'+id+'-gen','period-subrow-'+id+'-swd','period-subrow-'+id+'-ell','period-total-'].forEach(prefix=>{
+    const el=g(prefix.includes('subrow')?prefix:prefix+id);if(el)el.remove();
+  });
+  // simpler: remove all rows with this period id
+  ['period-divider-'+id,'period-subrow-'+id+'-gen','period-subrow-'+id+'-swd','period-subrow-'+id+'-ell','period-total-'+id].forEach(rid=>{const el=g(rid);if(el)el.remove();});
+  updateTotals();scheduleDraftSave();
+}
+
+function getPeriodData(){
+  return periods.map(p=>{
+    const id=p.id;
+    const n=(grp,r)=>parseInt(g('p'+id+'-'+grp+'-'+r)?.value)||0;
+    const grpData=grp=>{
+      const vals={};RANGES.forEach(r=>{vals[r]=n(grp,r);});
+      vals.total=RANGES.reduce((a,r)=>a+vals[r],0);
+      vals.failing=vals.r1+vals.r2;
+      vals.passing=vals.r3+vals.r4+vals.r5+vals.r6;
+      return vals;
+    };
+    const gen=grpData('gen'),swd=grpData('swd'),ell=grpData('ell');
+    const total=gen.total+swd.total+ell.total;
+    const passing=gen.passing+swd.passing+ell.passing;
+    const failing=gen.failing+swd.failing+ell.failing;
+    const r1=gen.r1+swd.r1+ell.r1,r2=gen.r2+swd.r2+ell.r2,r3=gen.r3+swd.r3+ell.r3;
+    const r4=gen.r4+swd.r4+ell.r4,r5=gen.r5+swd.r5+ell.r5,r6=gen.r6+swd.r6+ell.r6;
+    return{name:g('p'+id+'-name')?.value||'Period '+id,total,passing,failing,r1,r2,r3,r4,r5,r6,gen,swd,ell};
+  });
+}
+
+function updateTotals(){
+  const data=getPeriodData();
+  periods.forEach((p,i)=>{
+    const id=p.id,pd=data[i];if(!pd)return;
+    // Per-group subtotals & fail badges
+    ['gen','swd','ell'].forEach(grp=>{
+      const grpd=pd[grp];
+      const totalEl=g('p'+id+'-'+grp+'-total');if(totalEl)totalEl.textContent=grpd.total;
+      const failEl=g('p'+id+'-'+grp+'-fail');
+      if(failEl){failEl.textContent=grpd.failing;failEl.className='fail-val'+(grpd.failing===0?' zero':'');}
+    });
+    // Period total row
+    const tot=g('p'+id+'-total');if(tot)tot.textContent=pd.total;
+    RANGES.forEach((r,ri)=>{const el=g('p'+id+'-sum-'+r);if(el)el.textContent=pd[r];});
+    const ft=g('p'+id+'-fail-total');if(ft)ft.textContent=pd.failing;
+  });
+
+  // Grand totals footer
+  const T=data.reduce((a,p)=>({
+    total:a.total+p.total,passing:a.passing+p.passing,failing:a.failing+p.failing,
+    r1:a.r1+p.r1,r2:a.r2+p.r2,r3:a.r3+p.r3,r4:a.r4+p.r4,r5:a.r5+p.r5,r6:a.r6+p.r6,
+    swdTotal:a.swdTotal+p.swd.total,swdFail:a.swdFail+p.swd.failing,
+    ellTotal:a.ellTotal+p.ell.total,ellFail:a.ellFail+p.ell.failing,
+    genTotal:a.genTotal+p.gen.total,genFail:a.genFail+p.gen.failing
+  }),{total:0,passing:0,failing:0,r1:0,r2:0,r3:0,r4:0,r5:0,r6:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0,genTotal:0,genFail:0});
+  const rate=T.total>0?Math.round(T.passing/T.total*100):0;
+  const tf=g('periods-tfoot');
+  if(tf)tf.innerHTML=data.length===0?'':'<tr class="tfoot-row"><td>ALL PERIODS TOTAL</td><td>'+T.total+'</td><td>'+T.r1+'</td><td>'+T.r2+'</td><td>'+T.r3+'</td><td>'+T.r4+'</td><td>'+T.r5+'</td><td>'+T.r6+'</td><td>'+T.failing+'</td></tr>';
+
+  const col=rate>=75?'#15803d':rate>=60?'#854d0e':'#dc2626';
+  const row=g('totals-row');
+  if(row)row.innerHTML=data.length===0?'':
+    '<span class="pill" style="background:var(--accent-light);color:var(--accent)">'+T.total+' students</span>'+
+    '<span class="pill" style="background:#dcfce7;color:#15803d">\u2713 '+T.passing+' passing</span>'+
+    '<span class="pill" style="background:#fee2e2;color:#dc2626">\u2717 '+T.failing+' failing</span>'+
+    '<span class="pill" style="background:'+(rate>=75?'#dcfce7':rate>=60?'#fef9c3':'#fee2e2')+';color:'+col+'">'+rate+'% pass rate</span>'+
+    (T.swdTotal>0?'<span class="pill" style="background:#f5f3ff;color:#7c3aed">SWD: '+T.swdFail+' failing / '+T.swdTotal+'</span>':'')+
+    (T.ellTotal>0?'<span class="pill" style="background:#f0f9ff;color:#0369a1">ELL: '+T.ellFail+' failing / '+T.ellTotal+'</span>':'');
+}
+
+// ── Submit ──────────────────────────────────────────────────
+async function submitReport(){
+  g('submit-error').style.display='none';g('submit-success').style.display='none';
+  const pd=getPeriodData();
+  if(!pd.length){g('submit-error').textContent='Add at least one period.';g('submit-error').style.display='block';return;}
+  const btn=g('submit-btn');btn.textContent='Submitting\u2026';btn.disabled=true;
+  const T=pd.reduce((a,p)=>({total:a.total+p.total,passing:a.passing+p.passing,failing:a.failing+p.failing,r1:a.r1+p.r1,r2:a.r2+p.r2,r3:a.r3+p.r3,r4:a.r4+p.r4,r5:a.r5+p.r5,r6:a.r6+p.r6,swdTotal:a.swdTotal+p.swd.total,swdFail:a.swdFail+p.swd.failing,ellTotal:a.ellTotal+p.ell.total,ellFail:a.ellFail+p.ell.failing,genTotal:a.genTotal+p.gen.total,genFail:a.genFail+p.gen.failing}),{total:0,passing:0,failing:0,r1:0,r2:0,r3:0,r4:0,r5:0,r6:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0,genTotal:0,genFail:0});
+  const passRate=T.total>0?Math.round(T.passing/T.total*100):0;
+  const report={teacherId:currentUser.uid,teacherName:currentUserData.name||currentUser.email,teacherEmail:currentUser.email,teacherRole:currentUserData.role||'teacher',schoolId:currentUserData.schoolId||'unassigned',schoolName:currentUserData.schoolName||'Unassigned',year:g('report-year')?.value||'2025-2026',quarter:g('report-quarter').value,subject:g('report-subject')?.value||'Math',grade:g('report-grade').value,periods:pd,questions:collectFormData().questions,summary:{...T,passRate},createdAt:new Date().toISOString(),submittedAt:Date.now()};
+  try{
+    const ref=db.ref('reports/'+currentUser.uid).push();
+    await ref.set(report);await db.ref('allReports/'+ref.key).set(report);await db.ref(draftPath()).remove();
+    g('submit-success').textContent='Report submitted successfully!';g('submit-success').style.display='block';
+    btn.textContent='Submit Report \u2713';btn.disabled=false;
+    setTimeout(()=>{resetForm();showTab('my-reports');},1800);
+  }catch(e){g('submit-error').textContent='Error: '+e.message;g('submit-error').style.display='block';btn.textContent='Submit Report \u2713';btn.disabled=false;}
+}
+function resetForm(){
+  periods=[];periodCounter=0;g('periods-body').innerHTML='';g('periods-tfoot').innerHTML='';
+  ['q1-overall','q1-period','q1-overall2','q2-main','q2-explain','q2a','q2b','q2c','q2d','q2e','q3','q4','q5'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  g('submit-error').style.display='none';g('submit-success').style.display='none';
+  addPeriod();resetStepIndicators();updateTotals();
+}
+
+// ── My Reports ──────────────────────────────────────────────
+async function loadMyReports(){
+  const c=g('my-reports-list');
+  c.innerHTML='<div class="empty-state"><div class="empty-icon">\u23f3</div><h3>Loading\u2026</h3></div>';
+  try{
+    const snap=await db.ref('reports/'+currentUser.uid).get();
+    if(!snap.exists()){c.innerHTML='<div class="empty-state"><div class="empty-icon">\ud83d\udccb</div><h3>No reports yet</h3><p>Submit your first course data above.</p></div>';return;}
+    const reps=[];snap.forEach(ch=>reps.push({id:ch.key,...ch.val()}));
+    reps.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+    c.innerHTML='';
+    reps.forEach(r=>{
+      const pr=r.summary?.passRate??0,bc=pr>=75?'badge-good':pr>=60?'badge-mid':'badge-low';
+      const dt=r.createdAt?new Date(r.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+      const sw=r.summary?.swdTotal||0,sf=r.summary?.swdFail||0;
+      const ew=r.summary?.ellTotal||0,ef=r.summary?.ellFail||0;
+      const card=document.createElement('div');card.className='report-card';
+      card.innerHTML=
+        '<div class="report-card-header"><div><div style="font-weight:600;font-size:15px">'+r.quarter+'</div>'+
+        '<div class="report-meta">'+r.grade+' \u00b7 '+(r.subject||'')+(dt?' \u00b7 '+dt:'')+'</div></div>'+
+        '<span class="badge-pass '+bc+'">'+pr+'% passing</span></div>'+
+        '<div class="report-stats">'+
+        '<div class="stat-pill"><strong>'+(r.periods?.length||0)+'</strong> periods</div>'+
+        '<div class="stat-pill"><strong>'+(r.summary?.total||0)+'</strong> students</div>'+
+        '<div class="stat-pill">Failing: <strong>'+(r.summary?.failing||0)+'</strong></div>'+
+        (sw>0?'<div class="stat-pill" style="background:#f5f3ff;color:#7c3aed">SWD: <strong>'+sf+' failing</strong> / '+sw+'</div>':'')+
+        (ew>0?'<div class="stat-pill" style="background:#f0f9ff;color:#0369a1">ELL: <strong>'+ef+' failing</strong> / '+ew+'</div>':'')+
+        '</div>';
+      c.appendChild(card);
+    });
+  }catch(e){c.innerHTML='<div class="empty-state"><h3>Error: '+e.message+'</h3></div>';}
+}
+
+// ── PDF ─────────────────────────────────────────────────────
+function generatePDF(){
+  if(!window.jspdf){alert('PDF library not loaded. Please wait and try again.');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'letter'});
+  const W=279.4,M=12,C=W-M*2,navy=[26,40,86],white=[255,255,255],light=[247,248,252];
+  let y=12;
+  doc.setFillColor(...navy);doc.rect(0,0,W,24,'F');
+  doc.setTextColor(...white);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('ABC School District \u2014 Course Passing Report',M,10);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('Teacher: '+(currentUserData.name||currentUser.email)+'  \u00b7  '+(g('report-subject')?.value||'')+' '+(g('report-grade')?.value||'')+'  \u00b7  '+g('report-quarter').value+'  \u00b7  '+(g('report-year')?.value||''),M,17);
+  doc.text(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),W-M,17,{align:'right'});
+  y=30;
+  const pd=getPeriodData();
+  // Column widths: Period/Group, Total, r1-r6, Failing
+  const cols=[38,14,14,14,14,14,14,16];
+  const hdrs=['Period / Group','Total','0-55','56-64','65-79','80-89','90-94','95-100','Failing'];
+  // Actual col widths include failing
+  const allCols=[38,14,14,14,14,14,14,16];
+  const failW=18;
+
+  const drawHeader=()=>{
+    doc.setFillColor(26,40,86);doc.roundedRect(M,y,C,7,2,2,'F');
+    doc.setTextColor(...white);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text('COURSE PASSING DATA BY PERIOD',M+4,y+5);y+=9;
+    doc.setFillColor(232,236,255);doc.rect(M,y,C,6,'F');
+    doc.setTextColor(26,40,86);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    const allH=['Period / Group','Total','0-55','56-64','65-79','80-89','90-94','95-100','Failing'];
+    const allW=[38,14,14,14,14,14,14,14,failW];
+    let cx=M;allH.forEach((h,i)=>{doc.text(h,cx+allW[i]/2,y+4.2,{align:'center'});cx+=allW[i];});y+=6;
+  };
+  drawHeader();
+
+  const groupColors={gen:[240,253,244],swd:[245,243,255],ell:[240,249,255]};
+  const groupLabels={gen:'Gen Ed',swd:'SWD',ell:'ELL'};
+  const allW=[38,14,14,14,14,14,14,14,failW];
+
+  pd.forEach((p,pi)=>{
+    if(y>185){doc.addPage();y=12;drawHeader();}
+    // Period name bar
+    doc.setFillColor(55,65,100);doc.rect(M,y,C,6,'F');
+    doc.setTextColor(...white);doc.setFontSize(8);doc.setFont('helvetica','bold');
+    doc.text(p.name,M+3,y+4.3);y+=6;
+    // 3 sub-rows
+    ['gen','swd','ell'].forEach(grp=>{
+      if(y>190){doc.addPage();y=12;drawHeader();}
+      const gd=p[grp];
+      const gc=groupColors[grp];
+      doc.setFillColor(...gc);doc.rect(M,y,C,6,'F');
+      doc.setTextColor(40,40,80);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+      let cx=M;
+      doc.setFont('helvetica','bold');doc.text(groupLabels[grp],cx+allW[0]/2,y+4.2,{align:'center'});cx+=allW[0];
+      doc.setFont('helvetica','normal');
+      [gd.total,gd.r1,gd.r2,gd.r3,gd.r4,gd.r5,gd.r6].forEach((v,j)=>{doc.text(String(v||0),cx+allW[j+1]/2,y+4.2,{align:'center'});cx+=allW[j+1];});
+      // Failing cell
+      const fc=gd.failing>0?[220,38,38]:[100,100,120];
+      doc.setTextColor(...fc);doc.setFont('helvetica','bold');
+      doc.text(String(gd.failing||0),cx+failW/2,y+4.2,{align:'center'});
+      doc.setTextColor(40,40,80);y+=6;
+    });
+    // Period total row
+    doc.setFillColor(220,225,245);doc.rect(M,y,C,6,'F');
+    doc.setTextColor(26,40,86);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
+    let cx=M;doc.text('TOTAL',cx+allW[0]/2,y+4.2,{align:'center'});cx+=allW[0];
+    [p.total,p.r1,p.r2,p.r3,p.r4,p.r5,p.r6].forEach((v,j)=>{doc.text(String(v||0),cx+allW[j+1]/2,y+4.2,{align:'center'});cx+=allW[j+1];});
+    doc.setTextColor(220,38,38);doc.text(String(p.failing||0),cx+failW/2,y+4.2,{align:'center'});y+=8;
+  });
+
+  // Grand total
+  if(y>185){doc.addPage();y=12;}
+  const T=pd.reduce((a,p)=>({total:a.total+p.total,passing:a.passing+p.passing,failing:a.failing+p.failing,r1:a.r1+p.r1,r2:a.r2+p.r2,r3:a.r3+p.r3,r4:a.r4+p.r4,r5:a.r5+p.r5,r6:a.r6+p.r6,swdTotal:a.swdTotal+p.swd.total,swdFail:a.swdFail+p.swd.failing,ellTotal:a.ellTotal+p.ell.total,ellFail:a.ellFail+p.ell.failing,genFail:a.genFail+p.gen.failing}),{total:0,passing:0,failing:0,r1:0,r2:0,r3:0,r4:0,r5:0,r6:0,swdTotal:0,swdFail:0,ellTotal:0,ellFail:0,genFail:0});
+  const rate=T.total>0?Math.round(T.passing/T.total*100):0;
+  doc.setFillColor(...navy);doc.rect(M,y,C,7,'F');
+  doc.setTextColor(...white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  let cx=M;doc.text('ALL PERIODS TOTAL',cx+allW[0]/2,y+5,{align:'center'});cx+=allW[0];
+  [T.total,T.r1,T.r2,T.r3,T.r4,T.r5,T.r6].forEach((v,j)=>{doc.text(String(v),cx+allW[j+1]/2,y+5,{align:'center'});cx+=allW[j+1];});
+  doc.text(String(T.failing),cx+failW/2,y+5,{align:'center'});y+=13;
+
+  // Summary badges
+  const badge=(label,bg,tc,x,bw)=>{doc.setFillColor(...bg);doc.roundedRect(x,y,bw,9,2,2,'F');doc.setTextColor(...tc);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(label,x+bw/2,y+6,{align:'center'});};
+  badge('Pass Rate: '+rate+'%',rate>=75?[220,252,231]:[254,226,226],rate>=75?[21,128,61]:[220,38,38],M,38);
+  badge('Failing: '+T.failing,[254,226,226],[220,38,38],M+41,32);
+  badge('Passing: '+T.passing,[219,234,254],[29,78,216],M+76,32);
+  badge('Gen Ed Failing: '+T.genFail,[240,253,244],[21,128,61],M+111,42);
+  badge('SWD Failing: '+T.swdFail,[245,243,255],[124,58,237],M+156,38);
+  badge('ELL Failing: '+T.ellFail,[240,249,255],[3,105,161],M+197,35);
+  y+=15;
+
+  // Reflection questions
+  const addS=title=>{if(y>185){doc.addPage();y=12;}doc.setFillColor(...navy);doc.roundedRect(M,y,C,7,2,2,'F');doc.setTextColor(...white);doc.setFontSize(9);doc.setFont('helvetica','bold');doc.text(title,M+4,y+5);y+=11;};
+  const addQA=(q,a)=>{if(!a||!a.trim())return;if(y>190){doc.addPage();y=12;}doc.setFillColor(...light);doc.roundedRect(M,y,C,6,1,1,'F');doc.setTextColor(...navy);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(q,M+3,y+4.5);y+=7;doc.setFont('helvetica','normal');doc.setTextColor(75,82,128);const lines=doc.splitTextToSize(a,C-6);lines.forEach(l=>{if(y>200){doc.addPage();y=12;}doc.text(l,M+3,y+4);y+=5.5;});y+=3;};
+  addS('REFLECTION \u2014 PASSING DATA QUESTIONS');
+  addQA('1. Current passing rate:',g('q1-overall')?.value);addQA('1a. Per Period:',g('q1-period')?.value);addQA('1b. Overall:',g('q1-overall2')?.value);
+  addQA('2. Difference between best/lowest classes:',g('q2-main')?.value);addQA('Further explanation:',g('q2-explain')?.value);
+  addQA('2a. Teaching Techniques:',g('q2a')?.value);addQA('2b. Implementation Strategies:',g('q2b')?.value);addQA('2c. Student Characteristics:',g('q2c')?.value);addQA('2d. Additional Staff:',g('q2d')?.value);addQA('2e. Other Factors:',g('q2e')?.value);
+  addS('ACTION PLANS & GOALS');
+  addQA('3. Move students from 55-64 to 65-74:',g('q3')?.value);addQA('4. Move students from 65-75 to 85-94:',g('q4')?.value);addQA('5. 5-week attainable goals:',g('q5')?.value);
+  const pages=doc.getNumberOfPages();
+  for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFillColor(...navy);doc.rect(0,200,W,12,'F');doc.setTextColor(...white);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text('ABC School District \u2014 Course Passing Tracker',M,206);doc.text('Page '+i+' of '+pages,W-M,206,{align:'right'});}
+  doc.save((currentUserData.name||'Report').replace(/\s+/g,'_')+'_'+g('report-quarter').value.replace(/\s+/g,'_')+'.pdf');
+}
+
+function g(id){return document.getElementById(id);}
+</script>
+</body>
+</html>

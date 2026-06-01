@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Roosevelt — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+  :root{--navy:#0f1e45;--navy-dark:#091530;--gold:#f5c518;--white:#fff;--gray-100:#f4f6fb;--gray-200:#e8ecf4;--gray-400:#9aa3ba;--gray-600:#5a6380;--text:#1a2340;--error:#e53e3e;--success:#38a169;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--gray-100);min-height:100vh;display:flex}
+  .left-panel{width:340px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;padding:40px 36px;position:relative;overflow:hidden;flex-shrink:0}
+  .left-panel::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:#162550;border-radius:50%;opacity:.6}
+  .left-panel::after{content:'';position:absolute;bottom:-100px;left:-60px;width:260px;height:260px;background:#162550;border-radius:50%;opacity:.4}
+  .brand{display:flex;align-items:center;gap:14px;position:relative;z-index:2}
+  .brand-icon{width:48px;height:48px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy);font-weight:700;flex-shrink:0}
+  .brand-text h1{font-size:13px;font-weight:700;color:#fff;letter-spacing:.3px;line-height:1.2}
+  .brand-text p{font-size:11px;color:var(--gray-400);margin-top:2px}
+  .panel-tagline{margin-top:auto;position:relative;z-index:2}
+  .panel-tagline h2{font-family:'DM Serif Display',serif;font-size:36px;color:#fff;line-height:1.15;margin-bottom:14px}
+  .panel-tagline h2 span{color:var(--gold)}
+  .panel-tagline p{font-size:13px;color:var(--gray-400);line-height:1.6}
+  .gold-bar{width:44px;height:4px;background:var(--gold);border-radius:2px;margin-top:28px}
+  .right-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto}
+  .card{background:#fff;border-radius:18px;box-shadow:0 4px 40px rgba(15,30,69,.10);padding:40px 44px;width:100%;max-width:480px}
+  .card h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:5px}
+  .card .subtitle{font-size:13px;color:var(--gray-400);margin-bottom:24px}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray-600);margin-bottom:7px}
+  .form-group input,.form-group select{width:100%;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--gray-100);outline:none;transition:border-color .2s,background .2s}
+  .form-group input:focus,.form-group select:focus{border-color:var(--navy);background:#fff}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .role-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+  .role-tab{flex:1;min-width:80px;padding:9px 6px;border-radius:8px;border:1.5px solid var(--gray-200);background:var(--gray-100);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .2s;text-align:center}
+  .role-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .role-hint{font-size:12px;color:var(--gray-600);background:#f0f4ff;border:1px solid #dde5ff;border-radius:8px;padding:9px 13px;margin-bottom:16px;line-height:1.5;display:none}
+  .role-hint.show{display:block}
+  .passcode-section{display:none}
+  .passcode-section.show{display:block}
+  .passcode-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray-600);margin-bottom:7px}
+  .passcode-label .lock-icon{font-size:13px}
+  .new-school-row{display:none;gap:8px;align-items:flex-end}
+  .new-school-row.show{display:flex}
+  .new-school-row input{flex:1}
+  .new-school-row button{padding:11px 14px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .new-school-row button:hover{background:var(--navy-dark)}
+  .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--gray-400);font-size:12px}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gray-200)}
+  .btn-google{width:100%;padding:11px;background:#fff;color:#3c4043;border:1.5px solid var(--gray-200);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s,box-shadow .2s}
+  .btn-google:hover{background:#f8f9fa;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .btn-google svg{width:18px;height:18px;flex-shrink:0}
+  .btn-primary{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:4px}
+  .btn-primary:hover{background:var(--navy-dark)}
+  .btn-primary:disabled{opacity:.6;cursor:default}
+  .card-links{display:flex;justify-content:center;margin-top:14px;font-size:12px}
+  .card-links a{color:var(--navy);text-decoration:none;font-weight:500;cursor:pointer}
+  .card-links a:hover{text-decoration:underline}
+  .error-msg{background:#fff5f5;border:1px solid #fed7d7;color:var(--error);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+  .error-msg.show{display:block}
+  .success-msg{background:#f0fff4;border:1px solid #c6f6d5;color:var(--success);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+  .success-msg.show{display:block}
+  .dev-note{text-align:center;margin-top:24px;font-size:11px;color:var(--gray-400)}
+  @media(max-width:700px){.left-panel{display:none}body{display:block}.right-panel{min-height:100vh}.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="left-panel">
+  <div class="brand">
+    <div class="brand-icon">R</div>
+    <div class="brand-text">
+      <h1>Roosevelt School District</h1>
+      <p>335 East Clinton Avenue, Roosevelt, NY 11575</p>
+    </div>
+  </div>
+  <div class="panel-tagline">
+    <h2>Create Your<br/><span>Account</span></h2>
+    <p>Register as a teacher, administrator, or superintendent to access the Course Passing Data Portal.</p>
+    <div class="gold-bar"></div>
+  </div>
+</div>
+
+<div class="right-panel">
+  <div style="width:100%;max-width:480px">
+    <div class="card">
+      <h2>Create Account</h2>
+      <p class="subtitle">Select your role to get started</p>
+
+      <div class="role-tabs">
+        <div class="role-tab active" id="rtab-teacher"       onclick="setRole('teacher')">Teacher</div>
+        <div class="role-tab"        id="rtab-admin"         onclick="setRole('admin')">Administration</div>
+        <div class="role-tab"        id="rtab-superintendent" onclick="setRole('superintendent')">Superintendent</div>
+      </div>
+
+      <div class="role-hint" id="role-hint"></div>
+      <div class="error-msg"   id="errorMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+
+      <!-- Google Sign-In -->
+      <button class="btn-google" onclick="googleSignIn()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="divider">or register with email</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="firstNameInput" placeholder="Jane"/>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lastNameInput" placeholder="Smith"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="emailInput" placeholder="you@rufsd.org"/>
+      </div>
+
+      <!-- School dropdown — hidden for superintendent -->
+      <div id="school-section">
+        <div class="form-group">
+          <label>School</label>
+          <select id="schoolSelect" onchange="onSchoolChange()">
+            <option value="">-- Select your school --</option>
+          </select>
+        </div>
+        <div class="new-school-row" id="new-school-row">
+          <input type="text" id="newSchoolInput" placeholder="Enter new school name"/>
+          <button onclick="addNewSchool()">Add</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="passwordInput" placeholder="Min. 6 characters"/>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmInput" placeholder="Repeat password"/>
+      </div>
+
+      <!-- Passcode — shown for admin and superintendent only -->
+      <div class="passcode-section" id="passcode-section">
+        <div class="form-group">
+          <div class="passcode-label"><span class="lock-icon">🔒</span> Role Passcode</div>
+          <input type="password" id="passcodeInput" placeholder="Enter the passcode for your role"/>
+          <div id="passcode-hint" style="display:none;font-size:12px;padding:8px 12px;border-radius:7px;margin-top:7px;line-height:1.5"></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="register()" id="reg-btn">Create Account</button>
+
+      <div class="card-links">
+        <a href="index.html">&#8592; Already have an account? Sign in</a>
+      </div>
+    </div>
+    <div class="dev-note">Developed by Mitra Ramdas &middot; Version 2.0</div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword,
+           signInWithPopup, GoogleAuthProvider }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc }                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getDatabase, ref, set, get }               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig={apiKey:"AIzaSyAVls41ZyZLH9qk5pScvjOGJOuD9CYoaHU",authDomain:"coursepassing.firebaseapp.com",databaseURL:"https://coursepassing-default-rtdb.firebaseio.com",projectId:"coursepassing",storageBucket:"coursepassing.firebasestorage.app",messagingSenderId:"556505993758",appId:"1:556505993758:web:1a2fd4c5fc48bb56f9540f"};
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const fsDb = getFirestore(app);
+  const rtdb = getDatabase(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  // ── DEFAULT SCHOOLS ─────────────────────────────────────────
+  const DEFAULT_SCHOOLS = [
+    "Roosevelt Middle School",
+    "Roosevelt High School",
+    "Roosevelt Elementary School",
+    "District Office"
+  ];
+
+  const ROLE_HINTS = {
+    teacher:        "Teachers submit course passing data by period, complete reflections, and view their own reports.",
+    admin:          "Administrators view all teacher submissions for their school, access dashboards, and export compliance reports. Requires a passcode.",
+    superintendent: "Superintendents have district-wide access across all schools. Requires a passcode."
+  };
+
+  let selectedRole = 'teacher';
+  let dynamicSchools = [];   // schools loaded from Firebase
+
+  // ── LOAD SCHOOLS FROM FIREBASE ───────────────────────────────
+  async function loadSchools() {
+    try {
+      const snap = await get(ref(rtdb, 'config/schools'));
+      dynamicSchools = snap.exists() ? snap.val() : [];
+    } catch(e) { dynamicSchools = []; }
+    populateSchoolDropdown();
+  }
+
+  function populateSchoolDropdown(preserveValue) {
+    const sel = document.getElementById('schoolSelect');
+    const prev = preserveValue || sel.value;
+    const allSchools = [...new Set([...DEFAULT_SCHOOLS, ...dynamicSchools])];
+    sel.innerHTML = '<option value="">-- Select your school --</option>';
+    allSchools.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s; opt.textContent = s;
+      if (s === prev) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    const addOpt = document.createElement('option');
+    addOpt.value = '__add__'; addOpt.textContent = '+ Add a new school…';
+    sel.appendChild(addOpt);
+  }
+
+  loadSchools();
+
+  // ── ROLE / SCHOOL UI ─────────────────────────────────────────
+  window.setRole = (role) => {
+    selectedRole = role;
+    ['teacher','admin','superintendent'].forEach(r => {
+      document.getElementById('rtab-'+r).classList.toggle('active', r === role);
+    });
+    const hint = document.getElementById('role-hint');
+    hint.textContent = ROLE_HINTS[role];
+    hint.classList.add('show');
+    document.getElementById('school-section').style.display  = role === 'superintendent' ? 'none' : 'block';
+    const pc = document.getElementById('passcode-section');
+    const isPrivileged = role !== 'teacher';
+    pc.classList.toggle('show', isPrivileged);
+    document.getElementById('passcodeInput').value = '';
+    // Reset hint while async check runs
+    const hintEl = document.getElementById('passcode-hint');
+    if (hintEl) { hintEl.style.display = 'none'; hintEl.textContent = ''; }
+    if (isPrivileged) updatePasscodeHint(role);
+  };
+  setRole('teacher');
+
+  window.onSchoolChange = () => {
+    const sel = document.getElementById('schoolSelect');
+    const row = document.getElementById('new-school-row');
+    row.classList.toggle('show', sel.value === '__add__');
+    if (sel.value === '__add__') document.getElementById('newSchoolInput').focus();
+  };
+
+  window.addNewSchool = async () => {
+    const name = document.getElementById('newSchoolInput').value.trim();
+    if (!name) return;
+    if (!dynamicSchools.includes(name) && !DEFAULT_SCHOOLS.includes(name)) {
+      dynamicSchools.push(name);
+      try { await set(ref(rtdb, 'config/schools'), dynamicSchools); } catch(e) {}
+    }
+    populateSchoolDropdown(name);
+    document.getElementById('new-school-row').classList.remove('show');
+    document.getElementById('newSchoolInput').value = '';
+  };
+
+  // ── PASSCODE HINT HELPERS ─────────────────────────────────────
+  function showFirstTimeHint(hintEl, inputEl, role) {
+    hintEl.textContent = '🔓 No passcode has been set yet. You are the first ' + role + ' — whatever you enter here will become the passcode for future registrations. You may also leave it blank.';
+    hintEl.style.cssText = 'display:block;padding:8px 12px;border-radius:7px;margin-top:7px;font-size:12px;line-height:1.5;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;font-weight:500';
+    inputEl.placeholder = 'Create a passcode (or leave blank)';
+  }
+  function showLockedHint(hintEl, inputEl, storedValue) {
+    hintEl.innerHTML = '🔒 A passcode is already set for this role.' +
+      (storedValue ? ' Current passcode: <strong style="font-family:monospace;background:#e8ecf4;padding:1px 6px;border-radius:4px">' + storedValue + '</strong>' : '') +
+      '<br><span style="font-size:11px;color:#9aa3ba">To change it, log in as superintendent and go to Settings.</span>';
+    hintEl.style.cssText = 'display:block;padding:8px 12px;border-radius:7px;margin-top:7px;font-size:12px;line-height:1.6;background:#f4f6fb;border:1px solid #e8ecf4;color:#5a6380';
+    inputEl.placeholder = 'Enter the passcode shown above';
+  }
+
+  // ── PASSCODE CHECK ────────────────────────────────────────────
+  async function checkPasscode(role, entered) {
+    try {
+      const snap = await get(ref(rtdb, 'config/passcodes/' + role));
+      if (!snap.exists()) {
+        // No passcode set yet — first registration sets it
+        if (entered) {
+          await set(ref(rtdb, 'config/passcodes/' + role), entered);
+        }
+        return true;
+      }
+      return snap.val() === entered;
+    } catch(e) {
+      // Permission denied reading config = no passcode exists yet
+      // Try to write it (will succeed once the user's account is created)
+      // For now, allow registration to proceed
+      if (e.code === 'PERMISSION_DENIED' || e.message?.includes('permission')) {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  // Check whether a passcode exists in Firebase and update the hint + placeholder
+  async function updatePasscodeHint(role) {
+    const hintEl    = document.getElementById('passcode-hint');
+    const inputEl   = document.getElementById('passcodeInput');
+    // Show a loading state immediately so something appears right away
+    if (hintEl) {
+      hintEl.textContent = 'Checking passcode status…';
+      hintEl.style.cssText = 'display:block;padding:8px 12px;border-radius:7px;margin-top:7px;font-size:12px;line-height:1.5;background:#f4f6fb;border:1px solid #e8ecf4;color:#9aa3ba';
+    }
+    try {
+      const snap = await get(ref(rtdb, 'config/passcodes/' + role));
+      if (!snap.exists()) {
+        showFirstTimeHint(hintEl, inputEl, role);
+      } else {
+        showLockedHint(hintEl, inputEl, snap.val());
+      }
+    } catch(e) {
+      // Permission denied = no rules set up yet = treat as first-time setup
+      // This is the expected state before any superintendent has registered
+      showFirstTimeHint(hintEl, inputEl, role);
+    }
+  }
+
+  // ── BUILD USER RECORD ─────────────────────────────────────────
+  function buildUserRecord(uid, firstName, lastName, email, role, school) {
+    const schoolId = school ? school.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') : 'district';
+    return {
+      uid, name: firstName + ' ' + lastName, firstName, lastName, email, role,
+      schoolName: role === 'superintendent' ? 'District' : school,
+      schoolId:   role === 'superintendent' ? 'district' : schoolId,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  async function saveUserRecord(uid, record) {
+    await setDoc(doc(fsDb, 'users', uid), record);
+    await set(ref(rtdb, 'users/' + uid), record);
+    localStorage.setItem('rms_user', JSON.stringify(record));
+  }
+
+  function redirectByRole(role) {
+    if (role === 'superintendent') window.location.href = 'superintendent.html';
+    else if (role === 'admin')     window.location.href = 'admin.html';
+    else                           window.location.href = 'teacher.html';
+  }
+
+  // ── EMAIL REGISTER ────────────────────────────────────────────
+  window.register = async () => {
+    const firstName = document.getElementById('firstNameInput').value.trim();
+    const lastName  = document.getElementById('lastNameInput').value.trim();
+    const email     = document.getElementById('emailInput').value.trim();
+    const school    = document.getElementById('schoolSelect').value;
+    const password  = document.getElementById('passwordInput').value;
+    const confirm   = document.getElementById('confirmInput').value;
+    const passcode  = document.getElementById('passcodeInput').value;
+    const errEl = document.getElementById('errorMsg');
+    const sucEl = document.getElementById('successMsg');
+    errEl.classList.remove('show'); sucEl.classList.remove('show');
+
+    if (!firstName || !lastName) return showErr('Please enter your first and last name.');
+    if (!email)    return showErr('Please enter your email address.');
+    if (selectedRole !== 'superintendent' && (!school || school === '__add__'))
+      return showErr('Please select your school from the list.');
+    if (password.length < 6) return showErr('Password must be at least 6 characters.');
+    if (password !== confirm) return showErr('Passwords do not match.');
+    if (selectedRole !== 'teacher') {
+      let passcodeOk = false;
+      try {
+        const pcSnap = await get(ref(rtdb, 'config/passcodes/' + selectedRole));
+        if (!pcSnap.exists()) {
+          // First-time setup — no passcode in DB yet, always allow
+          passcodeOk = true;
+          // Save whatever they entered as the new passcode (only if non-blank)
+          if (passcode) {
+            await set(ref(rtdb, 'config/passcodes/' + selectedRole), passcode);
+          }
+        } else {
+          // Passcode exists — must match exactly
+          passcodeOk = (pcSnap.val() === passcode);
+        }
+      } catch(e) {
+        // Permission denied reading DB = rules not set up yet = first-time, allow through
+        passcodeOk = true;
+        if (passcode) {
+          try { await set(ref(rtdb, 'config/passcodes/' + selectedRole), passcode); } catch(_) {}
+        }
+      }
+      if (!passcodeOk) return showErr('Incorrect passcode. Contact your district administrator.');
+    }
+
+    const btn = document.getElementById('reg-btn');
+    btn.textContent = 'Creating account…'; btn.disabled = true;
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const record = buildUserRecord(cred.user.uid, firstName, lastName, email, selectedRole, school);
+      await saveUserRecord(cred.user.uid, record);
+      sucEl.textContent = 'Account created! Redirecting…'; sucEl.classList.add('show');
+      btn.textContent = 'Account Created ✓';
+      setTimeout(() => redirectByRole(selectedRole), 1500);
+    } catch(e) {
+      const msgs = {'auth/email-already-in-use':'An account with this email already exists.','auth/invalid-email':'Please enter a valid email address.','auth/weak-password':'Password is too weak.'};
+      showErr(msgs[e.code] || e.message);
+      btn.textContent = 'Create Account'; btn.disabled = false;
+    }
+  };
+
+  // ── GOOGLE SIGN-IN ────────────────────────────────────────────
+  window.googleSignIn = async () => {
+    const errEl = document.getElementById('errorMsg');
+    const sucEl = document.getElementById('successMsg');
+    errEl.classList.remove('show'); sucEl.classList.remove('show');
+
+    // Admin/superintendent still need passcode even with Google
+    if (selectedRole !== 'teacher') {
+      const passcode = document.getElementById('passcodeInput').value;
+      let passcodeOk = false;
+      try {
+        const pcSnap = await get(ref(rtdb, 'config/passcodes/' + selectedRole));
+        if (!pcSnap.exists()) {
+          passcodeOk = true;
+          if (passcode) await set(ref(rtdb, 'config/passcodes/' + selectedRole), passcode);
+        } else {
+          passcodeOk = (pcSnap.val() === passcode);
+        }
+      } catch(e) {
+        passcodeOk = true;
+        if (passcode) { try { await set(ref(rtdb, 'config/passcodes/' + selectedRole), passcode); } catch(_) {} }
+      }
+      if (!passcodeOk) return showErr('Incorrect passcode. Contact your district administrator.');
+    }
+    // School required for teacher/admin
+    const school = document.getElementById('schoolSelect').value;
+    if (selectedRole !== 'superintendent' && (!school || school === '__add__'))
+      return showErr('Please select your school before signing in with Google.');
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user   = result.user;
+      // Check if user record already exists
+      const snap = await get(ref(rtdb, 'users/' + user.uid));
+      if (snap.exists()) {
+        // Existing user — just redirect
+        const data = snap.val();
+        localStorage.setItem('rms_user', JSON.stringify(data));
+        redirectByRole(data.role);
+        return;
+      }
+      // New Google user — build record from Google profile
+      const nameParts = (user.displayName || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName  = nameParts.slice(1).join(' ') || '';
+      const record    = buildUserRecord(user.uid, firstName, lastName, user.email, selectedRole, school);
+      await saveUserRecord(user.uid, record);
+      sucEl.textContent = 'Account created! Redirecting…'; sucEl.classList.add('show');
+      setTimeout(() => redirectByRole(selectedRole), 1200);
+    } catch(e) {
+      if (e.code !== 'auth/popup-closed-by-user') showErr('Google sign-in failed: ' + e.message);
+    }
+  };
+
+  function showErr(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg; el.classList.add('show');
+  }
+
+  document.getElementById('confirmInput').addEventListener('keydown', e => { if(e.key==='Enter') window.register(); });
+</script>
+</body>
+</html>
